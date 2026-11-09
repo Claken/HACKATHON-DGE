@@ -22,6 +22,7 @@ https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-CO
 
 ## MCP
 Documentation du MCP Geocontext pour accéder aux données et services IGN : https://github.com/ignfab/geocontext <br>
+Documentation du MCP Carto pour réaliser des cartes web https://github.com/ignfab/mcp-carto
 
 ## Services de base
 Services de visualisation : https://cartes.gouv.fr/aide/fr/guides-utilisateur/utiliser-les-services-de-la-geoplateforme/diffusion/wmts/ <br>
@@ -34,6 +35,7 @@ Services de calcul d'itinéraires: https://cartes.gouv.fr/aide/fr/guides-utilisa
 Pour ajouter un composant carte IGN avec Leaflet : exemple ici https://leaflet-extras.github.io/leaflet-providers/preview/#filter=GeoportailFrance
 
 Pour ajouter un composant carte IGN avec OpenLayers : exemple ici https://openlayers.org/en/latest/examples/wmts-ign.html 
-Pour aller plus loin avec OpenLayers : https://github.com/IGNF/geopf-extensions-openlayers 
+Pour aller plus loin avec OpenLayers : https://github.com/IGNF/geopf-extensions-openlayers ou  https://github.com/ignfab/mcp-carto
+
 
 Pour ajouter un composant carte IGN avec Maplibre - Carte Facile  : https://fab-geocommuns.github.io/carte-facile-site/fr/ 
