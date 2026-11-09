@@ -18,7 +18,7 @@ https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-CO
 https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_4-0__GEOPARQUET_WGS84G_FRA_2026-01-01/region.parquet
 
 
-# Liens utiles pour accéder aux docs des services en ligne IGN (gratuits)
+# Liens utiles pour accéder aux docs des services en ligne IGN
 
 Services de visualisation : https://cartes.gouv.fr/aide/fr/guides-utilisateur/utiliser-les-services-de-la-geoplateforme/diffusion/wmts/ 
 Services de géocodage: https://cartes.gouv.fr/aide/fr/guides-utilisateur/utiliser-les-services-de-la-geoplateforme/geocodage/ 
