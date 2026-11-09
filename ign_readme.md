@@ -1,8 +1,16 @@
-# Liens utiles pour accéder aux données IGN 
+## Liens utiles pour accéder aux données IGN 
+Retrouvez tous le catalogue de données libres de l'IGN ici : https://cartes.gouv.fr/rechercher-une-donnee/search 
 
-Accéder à la BD TOPO IGN sur l’Isère au format GPKG (version juin 2026)  : [https://datalab.sspcloud.fr/s3/projet-hackathon-gestion-flux-isere/diffusion/Fonds de carte/BDTOPO](https://datalab.sspcloud.fr/s3/projet-hackathon-gestion-flux-isere/diffusion/Fonds%20de%20carte/BDTOPO/?profile=default)
+Accéder à la BD TOPO IGN  sur l’Isère au format GPKG (version juin 2026)  : [https://datalab.sspcloud.fr/s3/projet-hackathon-gestion-flux-isere/diffusion/Fonds de carte/BDTOPO](https://datalab.sspcloud.fr/s3/projet-hackathon-gestion-flux-isere/diffusion/Fonds%20de%20carte/BDTOPO/?profile=default)
 
 Accéder à la BD TOPO IGN sur l’Isère au format Parquet (version septembre 2026) : https://datalab.sspcloud.fr/s3/skriat/bd_topo_isere/?profile=default
+
+# Acceder aux données administratives 2026 de l'IGN cohérentes avec le Code Officiel Géographique France entière
+
+https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_4-0__GEOPARQUET_WGS84G_FRA_2026-01-01/commune.parquet
+https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_4-0__GEOPARQUET_WGS84G_FRA_2026-01-01/departement.parquet 
+https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-COG_4-0__GEOPARQUET_WGS84G_FRA_2026-01-01/region.parquet
+
 
 # Liens utiles pour accéder aux docs des services en ligne IGN (gratuits)
 
