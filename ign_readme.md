@@ -1,6 +1,5 @@
 # Liens utiles pour accéder aux données IGN 
 Retrouvez tous le catalogue de données libres de l'IGN ici : https://cartes.gouv.fr/rechercher-une-donnee/search 
-Lien vers le MCP Geoncontext https://github.com/ignfab/geocontext 
 
 ## BD TOPO
 https://cartes.gouv.fr/rechercher-une-donnee/dataset/IGNF_BD-TOPO 
@@ -20,7 +19,11 @@ https://data.geopf.fr/telechargement/download/ADMIN-EXPRESS-COG/ADMIN-EXPRESS-CO
 
 
 # Liens utiles pour accéder aux docs des services en ligne IGN
-Doc MCP Geocontext pour accéder aux données et services : https://github.com/ignfab/geocontext <br>
+
+## MCP
+Documentation du MCP Geocontext pour accéder aux données et services IGN : https://github.com/ignfab/geocontext <br>
+
+## Services de base
 Services de visualisation : https://cartes.gouv.fr/aide/fr/guides-utilisateur/utiliser-les-services-de-la-geoplateforme/diffusion/wmts/ <br>
 Services de géocodage: https://cartes.gouv.fr/aide/fr/guides-utilisateur/utiliser-les-services-de-la-geoplateforme/geocodage/ <br>
 Services de profil altimétrique : https://cartes.gouv.fr/aide/fr/guides-utilisateur/utiliser-les-services-de-la-geoplateforme/calcul-altimetrique/<br> 
