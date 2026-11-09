@@ -1,0 +1,131 @@
+[
+  {
+    "annee": 2023,
+    "fichier": "sites.csv",
+    "lignes": [
+      {
+        "site_id": "100040825",
+        "parent_site_id": "",
+        "site_name": "Tourbières de l'herretang tuilerie",
+        "fr_insee_code": "",
+        "xlong": "5.68871",
+        "ylat": "45.38224",
+        "external_ids": "",
+        "infrastructure_type": ""
+      }
+    ]
+  },
+  {
+    "annee": 2023,
+    "fichier": "channels.csv",
+    "lignes": [
+      {
+        "channel_id": "353347292",
+        "channel_provider_id": "",
+        "site_provider_id": "",
+        "site_id": "100040825",
+        "mobility_type": "PEDESTRIAN",
+        "comment": "",
+        "counter_transmission_type": "MANUAL",
+        "publication_transmission_type": "MANUAL",
+        "counter_type": "PASSIVE INFRARED",
+        "direction": "",
+        "provider_direction_code": "IN",
+        "provider_direction_name": "Tourbières de l'herretang tuilerie Piétons tourbières de l'Herretang tuilerie IN",
+        "data_provider_name": "CG38 Environnement",
+        "temporality": "",
+        "started_at": "2022-08-03T14:00:00+01:00",
+        "ended_at": "2026-05-18T09:00:00+01:00",
+        "last_updated_at": "2026-05-18T09:00:00+01:00",
+        "time_step": "3600",
+        "provider_portal_url": ""
+      }
+    ]
+  },
+  {
+    "annee": 2024,
+    "fichier": "sites.csv",
+    "lignes": [
+      {
+        "site_id": "100040825",
+        "parent_site_id": "",
+        "site_name": "Tourbières de l'herretang tuilerie",
+        "fr_insee_code": "",
+        "xlong": "5.68871",
+        "ylat": "45.38224",
+        "external_ids": "",
+        "infrastructure_type": ""
+      }
+    ]
+  },
+  {
+    "annee": 2024,
+    "fichier": "channels.csv",
+    "lignes": [
+      {
+        "channel_id": "353347292",
+        "channel_provider_id": "",
+        "site_provider_id": "",
+        "site_id": "100040825",
+        "mobility_type": "PEDESTRIAN",
+        "comment": "",
+        "counter_transmission_type": "MANUAL",
+        "publication_transmission_type": "MANUAL",
+        "counter_type": "PASSIVE INFRARED",
+        "direction": "",
+        "provider_direction_code": "IN",
+        "provider_direction_name": "Tourbières de l'herretang tuilerie Piétons tourbières de l'Herretang tuilerie IN",
+        "data_provider_name": "CG38 Environnement",
+        "temporality": "",
+        "started_at": "2022-08-03T14:00:00+01:00",
+        "ended_at": "2026-05-18T09:00:00+01:00",
+        "last_updated_at": "2026-05-18T09:00:00+01:00",
+        "time_step": "3600",
+        "provider_portal_url": ""
+      }
+    ]
+  },
+  {
+    "annee": 2025,
+    "fichier": "sites.csv",
+    "lignes": [
+      {
+        "site_id": "100040825",
+        "parent_site_id": "",
+        "site_name": "Tourbières de l'herretang tuilerie",
+        "fr_insee_code": "",
+        "xlong": "5.68871",
+        "ylat": "45.38224",
+        "external_ids": "",
+        "infrastructure_type": ""
+      }
+    ]
+  },
+  {
+    "annee": 2025,
+    "fichier": "channels.csv",
+    "lignes": [
+      {
+        "channel_id": "353347292",
+        "channel_provider_id": "",
+        "site_provider_id": "",
+        "site_id": "100040825",
+        "mobility_type": "PEDESTRIAN",
+        "comment": "",
+        "counter_transmission_type": "MANUAL",
+        "publication_transmission_type": "MANUAL",
+        "counter_type": "PASSIVE INFRARED",
+        "direction": "",
+        "provider_direction_code": "IN",
+        "provider_direction_name": "Tourbières de l'herretang tuilerie Piétons tourbières de l'Herretang tuilerie IN",
+        "data_provider_name": "CG38 Environnement",
+        "temporality": "",
+        "started_at": "2022-08-03T14:00:00+01:00",
+        "ended_at": "2026-05-18T09:00:00+01:00",
+        "last_updated_at": "2026-05-18T09:00:00+01:00",
+        "time_step": "3600",
+        "provider_portal_url": ""
+      }
+    ]
+  }
+]
