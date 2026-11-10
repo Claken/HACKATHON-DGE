@@ -12,7 +12,7 @@ Prédiction journalière de fréquentation et indice de risque de sur-fréquenta
 ## Installation
 
 ```bash
-pip install -r requirements.txt
+pip install -r src/requirements.txt
 ```
 
 ## Configuration
