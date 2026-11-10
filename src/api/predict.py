@@ -44,15 +44,22 @@ def charger_meilleur_modele(site_cfg: dict, mlflow_uri: str):
             f"Expérience '{site_cfg['mlflow_experiment']}' introuvable. "
             "Lancez d'abord train.py."
         )
-    runs = client.search_runs(
+    # Récupérer les 3 runs les plus récents (= dernière session d'entraînement)
+    # pour éviter de sélectionner un ancien modèle entraîné avec un jeu de features différent.
+    recent_runs = client.search_runs(
         experiment_ids=[experiment.experiment_id],
-        order_by=[f"metrics.{MLFLOW_CFG['metric_best']} ASC"],
-        max_results=1,
+        order_by=["start_time DESC"],
+        max_results=3,
     )
-    if not runs:
+    if not recent_runs:
         raise RuntimeError("Aucun run trouvé. Lancez d'abord train.py.")
 
-    best_run = runs[0]
+    metric = MLFLOW_CFG["metric_best"]
+    best_run = min(
+        (r for r in recent_runs if metric in r.data.metrics),
+        key=lambda r: r.data.metrics[metric],
+        default=recent_runs[0],
+    )
     mae      = best_run.data.metrics.get(MLFLOW_CFG["metric_best"], "?")
     capacite = int(
         best_run.data.params.get("capacite_journaliere")
