@@ -306,7 +306,7 @@ Ces quatre sites couvrent des altitudes (280 m à 1 430 m), des saisons de point
 
 ```bash
 # Entraîner sur Col du Coq
-python3 src/poc_xgboost_mlflow.py --site col-du-coq
+python3 src/api/train.py --site col-du-coq
 
 # Backtest Col du Coq
 python3 src/poc_backtest.py --site col-du-coq --date 2026-04-15

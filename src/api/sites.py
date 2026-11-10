@@ -1,13 +1,13 @@
 """
 Catalogue des sites supportés par le pipeline ML.
 
-Chaque entrée référence un site ENS (CG38 Environnement) et les paramètres
+Chaque entrée référence un site ENS (CG38 Environnement) avec les paramètres
 nécessaires au pipeline : canal de comptage, coordonnées GPS, capacité,
-seuils d'alerte.
+seuils d'alerte, et chemins vers les données CSV.
 
-Usage dans les scripts :
+Usage :
     from sites import SITES, DEFAULT_SITE
-    site = SITES[args.site]   # dict avec toutes les clés nécessaires
+    site_cfg = SITES["herretang"]
 """
 
 SITES = {
@@ -18,10 +18,12 @@ SITES = {
         "channel_in":           "353347292",
         "latitude":             45.38224,
         "longitude":            5.68871,
-        "capacite_journaliere": None,            # None → P90 auto sur le train
+        "capacite_journaliere": None,
         "seuils_risque":        {"modere": 0.60, "eleve": 0.85},
         "zone_vacances":        "Grenoble",
         "mlflow_experiment":    "flux-touristique-poc",
+        "frequentation_csv":    "herretang_2023_2025/frequentation_herretang_2023_2025.csv",
+        "meteo_csv":            "herretang_2023_2025/meteo_herretang_2023_2025.csv",
     },
     "col-du-coq": {
         "nom":                  "Col du Coq — Perquelin",
@@ -34,6 +36,8 @@ SITES = {
         "seuils_risque":        {"modere": 0.60, "eleve": 0.85},
         "zone_vacances":        "Grenoble",
         "mlflow_experiment":    "flux-touristique-poc",
+        "frequentation_csv":    None,
+        "meteo_csv":            None,
     },
     "etang-serre": {
         "nom":                  "Étang de la Serre — Observatoire",
@@ -46,6 +50,8 @@ SITES = {
         "seuils_risque":        {"modere": 0.60, "eleve": 0.85},
         "zone_vacances":        "Grenoble",
         "mlflow_experiment":    "flux-touristique-poc",
+        "frequentation_csv":    None,
+        "meteo_csv":            None,
     },
     "etang-lemps": {
         "nom":                  "Étang de Lemps — Sentier",
@@ -58,6 +64,8 @@ SITES = {
         "seuils_risque":        {"modere": 0.60, "eleve": 0.85},
         "zone_vacances":        "Grenoble",
         "mlflow_experiment":    "flux-touristique-poc",
+        "frequentation_csv":    None,
+        "meteo_csv":            None,
     },
 }
 

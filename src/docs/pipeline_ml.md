@@ -12,13 +12,13 @@ Le POC est instancié sur le site **Herretang — Tuilerie** (Isère) avec les d
 
 ```
 Éco-compteurs (horaire)   ─┐
-Météo historique           ├─► preparer_donnees.py ─► 2 CSV horaires
+Météo historique           ├─► (données fournies) ─► 2 CSV horaires
 Calendrier officiel       ─┘
 
-2 CSV horaires   ─► poc_xgboost_mlflow.py ─► 3 modèles XGBoost tracés dans MLflow
+2 CSV horaires   ─► train.py ─► 3 modèles XGBoost tracés dans MLflow
 
 Meilleur modèle MLflow ─┐
-Météo prévisionnelle    ├─► poc_projection.py ─► Indice de risque J+7 + graphique
+Météo prévisionnelle    ├─► predict.py ─► Indice de risque J+7 (JSON)
 Calendrier live        ─┘
 ```
 
@@ -155,7 +155,7 @@ Produit deux fichiers CSV reproductibles à partir des archives brutes.
 
 ---
 
-## Étape 2 — Entraînement (`poc_xgboost_mlflow.py`)
+## Étape 2 — Entraînement (`train.py`)
 
 ### Préprocessing
 
@@ -212,7 +212,7 @@ Suppression des 7 premiers jours (lags incomplets)
 
 La capacité journalière sert de référence pour le calcul du taux de charge :
 
-- **Si définie** dans `config.py` : valeur fixée avec le gestionnaire du site.
+- **Si définie** dans `sites.py` : valeur fixée avec le gestionnaire du site.
 - **Sinon** : estimée automatiquement au **percentile 90** du jeu d'entraînement ("jour chargé mais pas exceptionnel").
 
 ### Hyperparamètres explorés (3 runs)
@@ -262,7 +262,7 @@ Les valeurs ci-dessous sont lues depuis les artefacts MLflow (`feature_importanc
 
 ---
 
-## Étape 3 — Projection J+7 (`poc_projection.py`)
+## Étape 3 — Projection J+7 (`predict.py`)
 
 ### Chargement du modèle
 
@@ -304,31 +304,19 @@ Mar 11/11          142      47%   🟢 FAIBLE    8.3°C  🌧️
 ...
 ```
 
-**Graphique** : `projection_7j.png` — barres colorées par niveau de risque avec lignes de seuil de capacité.
+**API** (`GET /predict/{site_id}`) : JSON structuré avec prédictions, niveaux de risque et météo par jour.
+**CLI** (`python predict.py --site herretang`) : JSON sur stdout.
 
 ---
 
-## Configuration (`config.py`)
+## Configuration (`config.py` + `sites.py`)
 
-Tous les paramètres à adapter pour un nouveau site sont centralisés ici :
+Les paramètres sont répartis entre deux fichiers :
 
+**`config.py`** — paramètres transversaux (inchangés entre sites) :
 ```python
-SITE = {
-    "nom": "Herretang — Tuilerie",
-    "latitude": 45.38224,
-    "longitude": 5.68871,
-    "capacite_journaliere": None,         # None → P90 auto
-    "seuils_risque": {"modere": 0.60, "eleve": 0.85},
-}
-
-DONNEES = {
-    "frequentation": "...",
-    "meteo":         "...",
-}
-
 MLFLOW = {
-    "uri":         "...",
-    "experiment":  "flux-touristique-poc",
+    "uri":         "...",   # via MLFLOW_TRACKING_URI
     "metric_best": "mae_holdout",
 }
 
@@ -339,7 +327,24 @@ FEATURES = [
 ]
 ```
 
-Pour brancher un autre site : modifier `SITE`, `DONNEES`, et optionnellement `capacite_journaliere`.
+**`sites.py`** — catalogue des sites, un dict par entrée :
+```python
+SITES = {
+    "herretang": {
+        "nom": "Herretang — Tuilerie",
+        "latitude": 45.38224,
+        "longitude": 5.68871,
+        "capacite_journaliere": None,         # None → P90 auto
+        "seuils_risque": {"modere": 0.60, "eleve": 0.85},
+        "mlflow_experiment": "flux-touristique-poc",
+        "frequentation_csv": "herretang_2023_2025/frequentation_herretang_2023_2025.csv",
+        "meteo_csv":         "herretang_2023_2025/meteo_herretang_2023_2025.csv",
+    },
+    ...
+}
+```
+
+Pour brancher un autre site : ajouter une entrée dans `SITES` avec les chemins CSV correspondants.
 
 ---
 
@@ -483,7 +488,7 @@ Nécessite les archives SSP Cloud dans `../donnees_sspcloud/`.
 ### 2. Entraîner les modèles
 
 ```bash
-MLFLOW_TRACKING_URI=http://<host>:<port> python3 poc_xgboost_mlflow.py
+MLFLOW_TRACKING_URI=http://<host>:<port> python3 src/api/train.py --site herretang
 ```
 
 Lance 3 runs XGBoost et les trace dans MLflow.
@@ -491,10 +496,12 @@ Lance 3 runs XGBoost et les trace dans MLflow.
 ### 3. Projeter à J+7
 
 ```bash
-MLFLOW_TRACKING_URI=http://<host>:<port> python3 poc_projection.py
-```
+# Via CLI (JSON sur stdout)
+python3 src/api/predict.py --site herretang
 
-Affiche le tableau de risque dans le terminal et génère `projection_7j.png`.
+# Via API (après docker compose up)
+curl http://localhost:8000/predict/herretang
+```
 
 ### 4. Valider le modèle sur données 2026
 

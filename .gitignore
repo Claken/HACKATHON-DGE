@@ -3,5 +3,18 @@ __pycache__/
 mlflow.db
 mlartifacts/
 
+# API
 src/outputs/
 src/.env
+src/api/mlflow/
+src/api/outputs/
+src/api/.env
+
+# Frontend
+src/frontend/.output/
+src/frontend/.nuxt/
+src/frontend/node_modules/
+src/frontend/.env
+
+# Racine
+.env

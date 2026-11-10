@@ -14,9 +14,12 @@ Données réelles : archives ENS CG38 Environnement (un canal IN par site, voir 
 Comparaison systématique avec une baseline naïve (prédire = même jour la semaine passée).
 """
 import argparse
+import sys
 import time
 import zipfile
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent / "api"))
 
 import matplotlib
 matplotlib.use("Agg")
@@ -55,11 +58,11 @@ print(f"[Backtest] Mode    : {cli.mode}")
 # ─────────────────────────────────────────────
 mlflow.set_tracking_uri(MLFLOW_CFG["uri"])
 client     = mlflow.tracking.MlflowClient()
-experiment = client.get_experiment_by_name(MLFLOW_CFG["experiment"])
+experiment = client.get_experiment_by_name(SITE["mlflow_experiment"])
 if experiment is None:
     raise RuntimeError(
-        f"Expérience '{MLFLOW_CFG['experiment']}' introuvable — "
-        "lancez d'abord poc_xgboost_mlflow.py."
+        f"Expérience '{SITE['mlflow_experiment']}' introuvable — "
+        "lancez d'abord train.py."
     )
 
 runs = client.search_runs(
@@ -68,7 +71,7 @@ runs = client.search_runs(
     max_results=3,
 )
 if not runs:
-    raise RuntimeError("Aucun run trouvé — lancez d'abord poc_xgboost_mlflow.py.")
+    raise RuntimeError("Aucun run trouvé — lancez d'abord train.py.")
 
 best_run  = min(runs, key=lambda r: r.data.metrics.get(MLFLOW_CFG["metric_best"], float("inf")))
 mae_ref   = best_run.data.metrics.get(MLFLOW_CFG["metric_best"], "?")
