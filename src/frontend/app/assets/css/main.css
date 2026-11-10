@@ -1113,6 +1113,48 @@ td:nth-child(5) {
   max-width: 650px;
 }
 
+/* ── Layout deux colonnes : graphique + seuils ───────────────── */
+.bottom-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 20px;
+  align-items: start;
+}
+
+.chart-col {
+  min-height: 100px;
+}
+
+.chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 220px;
+  background: var(--color-white);
+  border: 1px solid var(--border-default);
+  border-radius: 20px;
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.chart-empty-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-body);
+}
+
+@media (max-width: 900px) {
+  .bottom-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
 [hidden] {
   display: none !important;
 }
@@ -1335,6 +1377,7 @@ td:first-child button {
 .threshold-input span {
   font-size: 11px;
   color: var(--grey-700);
+  white-space: nowrap;
 }
 .threshold-input input {
   min-width: 0;
