@@ -413,6 +413,7 @@ ax2.grid(axis="y", alpha=0.3)
 
 plt.tight_layout()
 suffix = f"_{cli.site}_{cli.mode}"
-output = Path(__file__).parent / f"backtest_result{suffix}.png"
+output = Path(__file__).parent / "outputs" / f"backtest_result{suffix}.png"
+output.parent.mkdir(exist_ok=True)
 plt.savefig(output, dpi=150)
 print(f"[OK] Graphique sauvegardé → {output}")
