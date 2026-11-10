@@ -46,7 +46,7 @@ async def lifespan(app: FastAPI):
             continue
         try:
             model, capacite = charger_meilleur_modele(
-                cfg, MLFLOW_CFG["uri"], MLFLOW_CFG["max_results"]
+                cfg, MLFLOW_CFG["uri"]
             )
             df_j = pd.read_csv(DATA_DIR / cfg["journalier_csv"], sep=";", encoding="utf-8-sig")
             df_j["date"] = pd.to_datetime(df_j["date"])
@@ -163,7 +163,7 @@ async def _train_and_reload(site_id: str) -> None:
     try:
         await asyncio.to_thread(run_training, cfg, MLFLOW_CFG["uri"])
         model, capacite = await asyncio.to_thread(
-            charger_meilleur_modele, cfg, MLFLOW_CFG["uri"], MLFLOW_CFG["max_results"]
+            charger_meilleur_modele, cfg, MLFLOW_CFG["uri"]
         )
         df_j = pd.read_csv(DATA_DIR / cfg["journalier_csv"], sep=";", encoding="utf-8-sig")
         df_j["date"] = pd.to_datetime(df_j["date"])

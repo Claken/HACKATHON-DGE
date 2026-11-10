@@ -35,7 +35,7 @@ COULEURS = {
 }
 
 
-def charger_meilleur_modele(site_cfg: dict, mlflow_uri: str, max_results: int):
+def charger_meilleur_modele(site_cfg: dict, mlflow_uri: str):
     mlflow.set_tracking_uri(mlflow_uri)
     client     = mlflow.tracking.MlflowClient()
     experiment = client.get_experiment_by_name(site_cfg["mlflow_experiment"])
@@ -46,13 +46,13 @@ def charger_meilleur_modele(site_cfg: dict, mlflow_uri: str, max_results: int):
         )
     runs = client.search_runs(
         experiment_ids=[experiment.experiment_id],
-        order_by=["start_time DESC"],
-        max_results=max_results,
+        order_by=[f"metrics.{MLFLOW_CFG['metric_best']} ASC"],
+        max_results=1,
     )
     if not runs:
         raise RuntimeError("Aucun run trouvé. Lancez d'abord train.py.")
 
-    best_run = min(runs, key=lambda r: r.data.metrics.get(MLFLOW_CFG["metric_best"], float("inf")))
+    best_run = runs[0]
     mae      = best_run.data.metrics.get(MLFLOW_CFG["metric_best"], "?")
     capacite = int(
         best_run.data.params.get("capacite_journaliere")

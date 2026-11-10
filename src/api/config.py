@@ -20,7 +20,6 @@ CALENDRIER_DIR = DATA_DIR / "calendrier"
 MLFLOW = {
     "uri":         os.getenv("MLFLOW_TRACKING_URI", f"sqlite:///{ROOT / 'mlflow' / 'mlflow.db'}"),
     "metric_best": "mae_holdout",
-    "max_results": 10,
 }
 
 FEATURES = [
