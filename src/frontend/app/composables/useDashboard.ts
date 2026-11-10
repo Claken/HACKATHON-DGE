@@ -231,9 +231,10 @@ export function useDashboard() {
       cards.value.find((c) => c.forecast !== null || c.historical !== null)?.date ?? "";
   }
   watch([week, siteId], selectFirstAvailable, { flush: "sync" });
-  watch(siteId, (id) => {
+  watch(siteId, async (id) => {
     trainStatus.value = "idle";
-    loadPredict(id);
+    await loadPredict(id);
+    selectFirstAvailable();
   });
   function today() {
     week.value = 0;

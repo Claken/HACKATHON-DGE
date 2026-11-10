@@ -39,6 +39,7 @@ TRAINING_STATUS: dict[str, str] = {}
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     log.info("Chargement des modèles et données statiques...")
+    sites_a_entrainer: list[str] = []
     for site_id, cfg in SITES.items():
         if cfg.get("journalier_csv") is None:
             log.info("  %s — pas de données, ignoré", site_id)
@@ -55,7 +56,18 @@ async def lifespan(app: FastAPI):
             MODEL_CACHE[site_id] = (model, capacite, historique, feries, vacances_periodes)
             log.info("  %s — prêt ✓", site_id)
         except Exception as e:
-            log.warning("  %s — échec chargement : %s", site_id, e)
+            log.warning("  %s — modèle absent : %s", site_id, e)
+            sites_a_entrainer.append(site_id)
+
+    if sites_a_entrainer:
+        log.info(
+            "Training automatique lancé pour %d site(s) : %s",
+            len(sites_a_entrainer), ", ".join(sites_a_entrainer),
+        )
+        for site_id in sites_a_entrainer:
+            TRAINING_STATUS[site_id] = "training"
+            asyncio.create_task(_train_and_reload(site_id))
+
     log.info("API prête. %d site(s) en cache.", len(MODEL_CACHE))
     yield
     MODEL_CACHE.clear()
@@ -161,8 +173,8 @@ async def _train_and_reload(site_id: str) -> None:
         MODEL_CACHE[site_id] = (model, capacite, historique, feries, vacances_periodes)
         TRAINING_STATUS[site_id] = "done"
         log.info("Entraînement terminé et modèle rechargé : %s", site_id)
-    except Exception as e:
-        log.error("Erreur entraînement %s : %s", site_id, e)
+    except Exception:
+        log.exception("Erreur entraînement %s", site_id)
         TRAINING_STATUS[site_id] = "error"
 
 

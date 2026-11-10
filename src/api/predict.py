@@ -39,7 +39,7 @@ def charger_meilleur_modele(site_cfg: dict, mlflow_uri: str, max_results: int):
     mlflow.set_tracking_uri(mlflow_uri)
     client     = mlflow.tracking.MlflowClient()
     experiment = client.get_experiment_by_name(site_cfg["mlflow_experiment"])
-    if experiment is None:
+    if experiment is None or experiment.lifecycle_stage == "deleted":
         raise RuntimeError(
             f"Expérience '{site_cfg['mlflow_experiment']}' introuvable. "
             "Lancez d'abord train.py."

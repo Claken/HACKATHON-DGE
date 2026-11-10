@@ -80,14 +80,22 @@ def run_training(site_cfg: dict, mlflow_uri: str) -> None:
         log.info("Capacité définie dans config : %d passages/jour", capacite)
 
     mlflow.set_tracking_uri(mlflow_uri)
-    mlflow.set_experiment(site_cfg["mlflow_experiment"])
-    log.info("MLflow connecté à : %s", mlflow_uri)
+    client = mlflow.tracking.MlflowClient()
+    experiment = client.get_experiment_by_name(site_cfg["mlflow_experiment"])
+    if experiment is None:
+        experiment_id = client.create_experiment(site_cfg["mlflow_experiment"])
+    elif experiment.lifecycle_stage == "deleted":
+        client.restore_experiment(experiment.experiment_id)
+        experiment_id = experiment.experiment_id
+    else:
+        experiment_id = experiment.experiment_id
+    log.info("MLflow connecté à : %s  (experiment_id=%s)", mlflow_uri, experiment_id)
 
     seuils = site_cfg["seuils_risque"]
 
     for i, params in enumerate(HYPERPARAMETRES, 1):
         log.info("[Run %d/%d] %s", i, len(HYPERPARAMETRES), params)
-        with mlflow.start_run(run_name=f"xgb-run-{i}"):
+        with mlflow.start_run(run_name=f"xgb-run-{i}", experiment_id=experiment_id):
             mlflow.log_params(params)
             mlflow.log_param("features",             FEATURES)
             mlflow.log_param("site",                 site_cfg["nom"])
@@ -118,7 +126,7 @@ def run_training(site_cfg: dict, mlflow_uri: str) -> None:
 
             fi = dict(zip(FEATURES, model.feature_importances_.round(4)))
             mlflow.log_dict(fi, "feature_importance.json")
-            mlflow.xgboost.log_model(model, "model")
+            mlflow.xgboost.log_model(model, name="model")
 
             log.info(
                 "  MAE=%.1f passages/j | RMSE=%.1f | MAPE=%.1f%% | Alertes élevées correctes=%.0f%%",
