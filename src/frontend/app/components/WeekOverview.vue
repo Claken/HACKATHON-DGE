@@ -10,11 +10,12 @@ defineProps<{
     level: Level | null;
     holiday?: string;
     vacation?: string;
+    evenement?: boolean;
   }>;
   selected: string;
   connected: boolean;
 }>();
-const emit = defineEmits<{ select: [date: string] }>();
+const emit = defineEmits<{ select: [date: string]; toggleEvent: [date: string] }>();
 </script>
 <template>
   <section class="week-section" id="semaine">
@@ -70,6 +71,14 @@ const emit = defineEmits<{ select: [date: string] }>();
             >Vacances · A</span
           ></span
         >
+        <button
+          v-if="day.forecast"
+          class="event-toggle"
+          :class="{ active: day.evenement }"
+          :aria-pressed="day.evenement"
+          aria-label="Marquer un événement ce jour"
+          @click.stop="emit('toggleEvent', day.date)"
+        >⚡ Événement</button>
       </button>
     </div>
   </section>

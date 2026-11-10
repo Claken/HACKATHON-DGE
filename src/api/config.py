@@ -31,6 +31,7 @@ FEATURES = [
     "mois", "jour_semaine", "weekend", "jour_ferie", "vacances_scolaires_zone_a",
     "temperature_moy", "precipitations_mm", "pluie_heures", "neige_oui_non_jour",
     "passages_j1", "passages_j7", "passages_j365",
+    "nb_evenements_references_j",
 ]
 
 HYPERPARAMETRES = [

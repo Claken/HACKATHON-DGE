@@ -27,7 +27,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import pandas as pd
 
-from config import MLFLOW as MLFLOW_CFG, DATA_DIR
+from config import MLFLOW as MLFLOW_CFG, DATA_DIR, FEATURES
 from sites import SITES
 from predict import charger_meilleur_modele, charger_calendrier_local, run_prediction
 
@@ -52,6 +52,12 @@ async def lifespan(app: FastAPI):
             model, capacite = charger_meilleur_modele(
                 cfg, MLFLOW_CFG["uri"]
             )
+            # Vérifie que le modèle a été entraîné avec le jeu de features courant
+            if model.n_features_in_ != len(FEATURES):
+                raise ValueError(
+                    f"Modèle entraîné avec {model.n_features_in_} features, "
+                    f"{len(FEATURES)} attendues — réentraînement nécessaire."
+                )
             df_j = pd.read_csv(DATA_DIR / cfg["journalier_csv"], sep=";", encoding="utf-8-sig")
             df_j["date"] = pd.to_datetime(df_j["date"])
             df_j = df_j[df_j["jour_complet"] == 1]
@@ -60,7 +66,7 @@ async def lifespan(app: FastAPI):
             MODEL_CACHE[site_id] = (model, capacite, historique, feries, vacances_periodes)
             log.info("  %s — prêt ✓", site_id)
         except Exception as e:
-            log.warning("  %s — modèle absent : %s", site_id, e)
+            log.warning("  %s — modèle absent ou obsolète : %s", site_id, e)
             sites_a_entrainer.append(site_id)
 
     if sites_a_entrainer:
@@ -245,7 +251,10 @@ def site_metrics(site_id: str):
 
 
 @app.get("/predict/{site_id}")
-def predict(site_id: str):
+def predict(
+    site_id: str,
+    event_dates: list[str] = Query(default=[], description="Dates avec événement (YYYY-MM-DD)"),
+):
     if site_id not in SITES:
         raise HTTPException(status_code=404, detail=f"Site '{site_id}' inconnu.")
 
@@ -253,6 +262,7 @@ def predict(site_id: str):
         raise HTTPException(status_code=503, detail=f"Modèle non disponible pour '{site_id}'.")
 
     model, capacite, historique, feries, vacances_periodes = MODEL_CACHE[site_id]
+    evenements = {d: 1 for d in event_dates} if event_dates else None
     try:
         return run_prediction(
             site_id=site_id,
@@ -262,6 +272,7 @@ def predict(site_id: str):
             historique=historique,
             feries=feries,
             vacances_periodes=vacances_periodes,
+            evenements=evenements,
         )
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))

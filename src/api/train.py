@@ -69,6 +69,8 @@ def run_training(site_cfg: dict, mlflow_uri: str) -> None:
     daily = daily.merge(lag365, on="date", how="left")
 
     daily = daily.dropna(subset=["passages_j1", "passages_j7", "passages_j365", "temperature_moy"])
+    if "nb_evenements_references_j" not in daily.columns:
+        daily["nb_evenements_references_j"] = 0
 
     # 2020-2021 exclus : données COVID atypiques (confinements, réouvertures)
     train   = daily[(daily["date"].dt.year >= 2022) & (daily["date"].dt.year < 2025)].copy()
