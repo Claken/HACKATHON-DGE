@@ -95,7 +95,7 @@ def fetch_meteo_prevision(site_cfg: dict) -> pd.DataFrame:
         f"&forecast_days=7&timezone=Europe%2FParis"
     )
     log.info("Prévisions 7 jours pour %s...", site_cfg["nom"])
-    resp = requests.get(url, timeout=15)
+    resp = requests.get(url, timeout=5)
     resp.raise_for_status()
     w = resp.json()["daily"]
     return pd.DataFrame({
@@ -140,7 +140,7 @@ def fetch_calendrier(zone_vacances: str = "Grenoble") -> tuple[set, list]:
             end   = pd.to_datetime(r["end_date"]).date()
             vacances_periodes.append((start, end))
         offset += limit
-        if offset >= total_count or not results:
+        if offset >= total_count or not results or offset > 10_000:
             break
 
     return feries, vacances_periodes
@@ -163,21 +163,28 @@ def run_prediction(
     *,
     model=None,
     capacite: int = None,
+    historique: pd.Series = None,
+    feries: set = None,
+    vacances_periodes: list = None,
 ) -> dict:
     """
     Orchestre la prédiction J+7 et retourne un dict JSON-sérialisable.
-    - API  : passe model + capacite (déjà chargés au boot) → pas d'appel MLflow.
-    - CLI  : passe mlflow_uri + max_results → charge le modèle à la volée.
+    - API  : passe model/capacite/historique/feries/vacances (boot cache) → zéro I/O statique.
+    - CLI  : laisse tout à None → charge depuis MLflow + disque + APIs calendrier.
     """
     if model is None:
         model, capacite = charger_meilleur_modele(site_cfg, mlflow_uri, max_results)
 
-    freq       = charger_frequentation(site_cfg)
-    historique = freq.groupby("date")["passages_entrants"].sum().sort_index()
-    lag        = construire_lags(historique)
+    if historique is None:
+        freq       = charger_frequentation(site_cfg)
+        historique = freq.groupby("date")["passages_entrants"].sum().sort_index()
+
+    lag = construire_lags(historique)
 
     df = fetch_meteo_prevision(site_cfg)
-    feries, vacances_periodes = fetch_calendrier(site_cfg.get("zone_vacances", "Grenoble"))
+
+    if feries is None or vacances_periodes is None:
+        feries, vacances_periodes = fetch_calendrier(site_cfg.get("zone_vacances", "Grenoble"))
 
     def est_vacances(date: pd.Timestamp) -> int:
         d = date.date()

@@ -6,8 +6,9 @@ Endpoints :
   GET  /sites               → liste des sites disponibles
   GET  /predict/{site_id}   → projection J+7 pour un site
 
-Les modèles sont chargés depuis MLflow au démarrage et mis en cache mémoire.
-Les requêtes /predict n'accèdent plus à MLflow.
+Au démarrage : modèle XGBoost + historique CSV + calendrier chargés en cache par site.
+Les requêtes /predict n'accèdent ni à MLflow ni aux APIs calendrier.
+Seul Open-Meteo (météo J+7) est appelé à chaque prédiction.
 """
 import logging
 from contextlib import asynccontextmanager
@@ -17,29 +18,34 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import MLFLOW as MLFLOW_CFG
 from sites import SITES
-from predict import charger_meilleur_modele, run_prediction
+from predict import charger_meilleur_modele, fetch_calendrier, run_prediction
+from utils import charger_frequentation
 
 log = logging.getLogger(__name__)
 
-# { site_id: (model, capacite) }
+# { site_id: (model, capacite, historique, feries, vacances_periodes) }
 MODEL_CACHE: dict = {}
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    log.info("Chargement des modèles MLflow...")
+    log.info("Chargement des modèles et données statiques...")
     for site_id, cfg in SITES.items():
         if cfg["frequentation_csv"] is None:
             log.info("  %s — pas de données, ignoré", site_id)
             continue
         try:
-            MODEL_CACHE[site_id] = charger_meilleur_modele(
+            model, capacite = charger_meilleur_modele(
                 cfg, MLFLOW_CFG["uri"], MLFLOW_CFG["max_results"]
             )
-            log.info("  %s — modèle chargé ✓", site_id)
+            freq       = charger_frequentation(cfg)
+            historique = freq.groupby("date")["passages_entrants"].sum().sort_index()
+            feries, vacances_periodes = fetch_calendrier(cfg.get("zone_vacances", "Grenoble"))
+            MODEL_CACHE[site_id] = (model, capacite, historique, feries, vacances_periodes)
+            log.info("  %s — prêt ✓", site_id)
         except Exception as e:
             log.warning("  %s — échec chargement : %s", site_id, e)
-    log.info("API prête. %d modèle(s) en cache.", len(MODEL_CACHE))
+    log.info("API prête. %d site(s) en cache.", len(MODEL_CACHE))
     yield
     MODEL_CACHE.clear()
 
@@ -89,13 +95,16 @@ def predict(site_id: str):
     if site_id not in MODEL_CACHE:
         raise HTTPException(status_code=503, detail=f"Modèle non disponible pour '{site_id}'.")
 
-    model, capacite = MODEL_CACHE[site_id]
+    model, capacite, historique, feries, vacances_periodes = MODEL_CACHE[site_id]
     try:
         return run_prediction(
             site_id=site_id,
             site_cfg=SITES[site_id],
             model=model,
             capacite=capacite,
+            historique=historique,
+            feries=feries,
+            vacances_periodes=vacances_periodes,
         )
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
