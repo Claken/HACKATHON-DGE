@@ -113,7 +113,7 @@ const trainLabel = computed(() => {
             {{ selected.forecast.total }} <small>passages</small>
           </div>
           <span class="muted small"
-            >À l’accès Tuilerie · passages entrants</span
+            >{{ site.name }} · passages entrants</span
           >
         </div>
         <div class="metric">
@@ -153,7 +153,7 @@ const trainLabel = computed(() => {
           <div class="value">
             {{ selected.historical }} <small>passages</small>
           </div>
-          <span class="muted small">À l’accès Tuilerie · passages entrants</span>
+          <span class="muted small">{{ site.name }} · passages entrants</span>
         </div>
       </section>
     </template>

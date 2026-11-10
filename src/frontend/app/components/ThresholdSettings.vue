@@ -43,8 +43,8 @@ watch([moderate, high], () => {
             :id="key"
             :value="key === 'moderate' ? moderate : high"
             type="number"
-            min="1"
-            max="2000"
+            :min="key === 'moderate' ? 1 : moderate + 1"
+            :max="key === 'moderate' ? high - 1 : 2000"
             :aria-invalid="!valid"
             @input="
               key === 'moderate'
@@ -56,8 +56,8 @@ watch([moderate, high], () => {
         <input
           :aria-label="key === 'moderate' ? 'Seuil modéré' : 'Seuil élevé'"
           type="range"
-          min="1"
-          :max="scale"
+          :min="key === 'moderate' ? 1 : moderate + 1"
+          :max="key === 'moderate' ? high - 1 : scale"
           :value="key === 'moderate' ? moderate : high"
           @input="
             key === 'moderate'
