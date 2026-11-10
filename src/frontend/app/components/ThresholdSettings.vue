@@ -35,42 +35,50 @@ watch([moderate, high], () => {
       <span class="unit-tag">Passages / jour</span>
     </div>
     <div class="threshold-editors">
-      <div
-        v-for="key in ['moderate', 'high'] as const"
-        :key="key"
-        class="threshold-editor"
-      >
-        <label :for="key"
-          ><i class="dot" :class="{ 'red-dot': key === 'high' }" />Vigilance
-          {{ key === "moderate" ? "modérée" : "élevée" }}</label
-        >
+      <div class="threshold-editor">
+        <label for="moderate"><i class="dot" />Vigilance modérée</label>
         <div class="threshold-input">
-          <span>À partir de</span
-          ><input
-            :id="key"
-            :value="key === 'moderate' ? moderate : high"
+          <span>À partir de</span>
+          <input
+            id="moderate"
+            v-model.number="moderate"
             type="number"
-            :min="key === 'moderate' ? 1 : moderate + 1"
-            :max="key === 'moderate' ? high - 1 : 2000"
+            :min="1"
+            :max="high - 1"
             :aria-invalid="!valid"
-            @input="
-              key === 'moderate'
-                ? (moderate = Number(($event.target as HTMLInputElement).value))
-                : (high = Number(($event.target as HTMLInputElement).value))
-            "
-          /><span>passages / j</span>
+          />
+          <span>passages / j</span>
         </div>
         <input
-          :aria-label="key === 'moderate' ? 'Seuil modéré' : 'Seuil élevé'"
+          aria-label="Seuil modéré"
           type="range"
-          :min="key === 'moderate' ? 1 : moderate + 1"
-          :max="key === 'moderate' ? high - 1 : scale"
-          :value="key === 'moderate' ? moderate : high"
-          @input="
-            key === 'moderate'
-              ? (moderate = Number(($event.target as HTMLInputElement).value))
-              : (high = Number(($event.target as HTMLInputElement).value))
-          "
+          :min="1"
+          :max="high - 1"
+          :value="moderate"
+          @input="moderate = Number(($event.target as HTMLInputElement).value)"
+        />
+      </div>
+      <div class="threshold-editor">
+        <label for="high"><i class="dot red-dot" />Vigilance élevée</label>
+        <div class="threshold-input">
+          <span>À partir de</span>
+          <input
+            id="high"
+            v-model.number="high"
+            type="number"
+            :min="moderate + 1"
+            :max="2000"
+            :aria-invalid="!valid"
+          />
+          <span>passages / j</span>
+        </div>
+        <input
+          aria-label="Seuil élevé"
+          type="range"
+          :min="moderate + 1"
+          :max="scale"
+          :value="high"
+          @input="high = Number(($event.target as HTMLInputElement).value)"
         />
       </div>
     </div>
