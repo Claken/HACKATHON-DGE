@@ -35,6 +35,32 @@ export interface TrainStatusResponse {
   ready: boolean;
 }
 
+export interface MetricsRun {
+  run_id: string;
+  run_name: string;
+  is_best: boolean;
+  metrics: {
+    mae_holdout: number | null;
+    rmse_holdout: number | null;
+    mae_normalisee_holdout: number | null;
+    precision_alerte_elevee: number | null;
+  };
+  params: {
+    n_estimators: string | null;
+    max_depth: string | null;
+    learning_rate: string | null;
+    subsample: string | null;
+    train_jours: string | null;
+    holdout_jours: string | null;
+  };
+}
+
+export interface MetricsResponse {
+  site: { id: string; nom: string; commune: string };
+  runs: MetricsRun[];
+  feature_importance: Record<string, number> | null;
+}
+
 export function useApi() {
   const config = useRuntimeConfig();
   const base = config.public.apiBase as string;
@@ -61,5 +87,9 @@ export function useApi() {
     return $fetch<TrainStatusResponse>(`${base}/train/${siteId}/status`);
   }
 
-  return { fetchSites, fetchPredict, fetchHistory, triggerTrain, fetchTrainStatus };
+  async function fetchMetrics(siteId: string): Promise<MetricsResponse> {
+    return $fetch<MetricsResponse>(`${base}/metrics/${siteId}`);
+  }
+
+  return { fetchSites, fetchPredict, fetchHistory, triggerTrain, fetchTrainStatus, fetchMetrics };
 }

@@ -156,13 +156,6 @@ const trainLabel = computed(() => {
           </div>
         </div>
       </section>
-      <HourlyChart
-          :peak="selected.forecast.peak"
-          :total="selected.forecast.total"
-          :reference="selected.forecast.reference"
-          :threshold="thresholds.moderate"
-          :date="longDate(selected.date)"
-        />
     </template>
 
     <!-- Détail historique (jours passés avec données CSV) -->
@@ -216,7 +209,25 @@ const trainLabel = computed(() => {
         </p>
       </template>
     </section>
-    <ThresholdSettings v-model="thresholds" />
+
+    <!-- Layout deux colonnes : graphique + seuils de vigilance -->
+    <div class="bottom-layout">
+      <div class="chart-col">
+        <HourlyChart
+          v-if="selected?.forecast && selected.level"
+          :peak="selected.forecast.peak"
+          :total="selected.forecast.total"
+          :reference="selected.forecast.reference"
+          :threshold="thresholds.moderate"
+          :date="longDate(selected.date)"
+        />
+        <div v-else class="chart-empty">
+          <div class="chart-empty-title">Affluence du jour · {{ site.name }}</div>
+          <span>Sélectionnez une journée avec prévision pour afficher la courbe horaire</span>
+        </div>
+      </div>
+      <ThresholdSettings v-model="thresholds" />
+    </div>
     <details class="trust" id="sources">
       <summary>Sources, fiabilité et limites de la prévision</summary>
       <p>

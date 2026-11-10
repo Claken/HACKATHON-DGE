@@ -6,6 +6,7 @@ Endpoints :
   GET  /sites                     → liste des sites disponibles
   GET  /predict/{site_id}         → projection J+7 pour un site
   GET  /history/{site_id}         → comptages historiques (CSV) sur une plage de dates
+  GET  /metrics/{site_id}         → métriques MLflow + importances des variables
   POST /train/{site_id}           → lance l'entraînement XGBoost en arrière-plan
   GET  /train/{site_id}/status    → état de l'entraînement
 
@@ -14,9 +15,12 @@ Les requêtes /predict n'accèdent ni à MLflow ni aux APIs calendrier.
 Seul Open-Meteo (météo J+7) est appelé à chaque prédiction.
 """
 import asyncio
+import json
 import logging
 from contextlib import asynccontextmanager
 from typing import Literal
+
+import mlflow
 
 from fastapi import BackgroundTasks, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -176,6 +180,68 @@ async def _train_and_reload(site_id: str) -> None:
     except Exception:
         log.exception("Erreur entraînement %s", site_id)
         TRAINING_STATUS[site_id] = "error"
+
+
+@app.get("/metrics/{site_id}")
+def site_metrics(site_id: str):
+    if site_id not in SITES:
+        raise HTTPException(status_code=404, detail=f"Site '{site_id}' inconnu.")
+    cfg = SITES[site_id]
+
+    try:
+        mlflow.set_tracking_uri(MLFLOW_CFG["uri"])
+        client = mlflow.tracking.MlflowClient()
+        experiment = client.get_experiment_by_name(cfg["mlflow_experiment"])
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"MLflow inaccessible : {e}")
+
+    if experiment is None or experiment.lifecycle_stage == "deleted":
+        raise HTTPException(status_code=404, detail="Aucun entraînement trouvé pour ce site.")
+
+    runs = client.search_runs(
+        experiment_ids=[experiment.experiment_id],
+        order_by=["metrics.mae_holdout ASC"],
+    )
+    if not runs:
+        raise HTTPException(status_code=404, detail="Aucun run MLflow pour ce site.")
+
+    best_run_id = runs[0].info.run_id
+    feature_importance = None
+    try:
+        local_path = mlflow.artifacts.download_artifacts(
+            f"runs:/{best_run_id}/feature_importance.json"
+        )
+        with open(local_path) as f:
+            feature_importance = json.load(f)
+    except Exception:
+        pass
+
+    return {
+        "site": {"id": site_id, "nom": cfg["nom"], "commune": cfg["commune"]},
+        "runs": [
+            {
+                "run_id":   r.info.run_id,
+                "run_name": r.info.run_name or f"run-{r.info.run_id[:8]}",
+                "is_best":  r.info.run_id == best_run_id,
+                "metrics": {
+                    "mae_holdout":             r.data.metrics.get("mae_holdout"),
+                    "rmse_holdout":            r.data.metrics.get("rmse_holdout"),
+                    "mae_normalisee_holdout":  r.data.metrics.get("mae_normalisee_holdout"),
+                    "precision_alerte_elevee": r.data.metrics.get("precision_alerte_elevee"),
+                },
+                "params": {
+                    "n_estimators":  r.data.params.get("n_estimators"),
+                    "max_depth":     r.data.params.get("max_depth"),
+                    "learning_rate": r.data.params.get("learning_rate"),
+                    "subsample":     r.data.params.get("subsample"),
+                    "train_jours":   r.data.params.get("train_jours"),
+                    "holdout_jours": r.data.params.get("holdout_jours"),
+                },
+            }
+            for r in runs
+        ],
+        "feature_importance": feature_importance,
+    }
 
 
 @app.get("/predict/{site_id}")

@@ -1,5 +1,9 @@
 <script setup lang="ts">
-defineProps<{ siteName: string }>();
+defineProps<{
+  siteName: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
+}>();
 </script>
 <template>
   <header>
@@ -23,16 +27,31 @@ defineProps<{ siteName: string }>();
         <div>Un tableau de bord pour les gestionnaires de sites</div>
       </div>
       <nav class="nav">
-        <a href="#previsions">← Prévisions</a
-        ><a href="#semaine">← Vue à 7 jours</a><a href="#sources">← Données</a>
+        <a href="/#previsions">← Prévisions</a
+        ><a href="/#semaine">← Vue à 7 jours</a
+        ><a href="/#sources">← Données</a
+        ><NuxtLink to="/modele" class="nav-page">Performance du modèle</NuxtLink>
       </nav>
     </div>
   </header>
   <section class="hero">
     <div class="hero-inner">
       <div class="eyebrow">Gestion des sites · Isère</div>
-      <h1 id="siteTitle">Prévision d’affluence — {{ siteName }}</h1>
-      <p>Une vue simple pour préparer les prochains jours.</p>
+      <h1 id="siteTitle">{{ heroTitle ?? `Prévision d’affluence — ${siteName}` }}</h1>
+      <p>{{ heroSubtitle ?? "Une vue simple pour préparer les prochains jours." }}</p>
     </div>
   </section>
 </template>
+<style scoped>
+.nav-page {
+  margin-left: 8px;
+  padding-left: 24px;
+  border-left: 1px solid var(--border-default);
+  color: var(--blue-france);
+  text-decoration: none;
+  font-weight: 500;
+}
+.nav-page:hover {
+  text-decoration: underline;
+}
+</style>
