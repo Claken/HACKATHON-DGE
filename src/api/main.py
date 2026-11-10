@@ -2,18 +2,23 @@
 API FastAPI — Flux Touristiques CG38.
 
 Endpoints :
-  GET  /health              → état de l'API
-  GET  /sites               → liste des sites disponibles
-  GET  /predict/{site_id}   → projection J+7 pour un site
+  GET  /health                    → état de l'API
+  GET  /sites                     → liste des sites disponibles
+  GET  /predict/{site_id}         → projection J+7 pour un site
+  GET  /history/{site_id}         → comptages historiques (CSV) sur une plage de dates
+  POST /train/{site_id}           → lance l'entraînement XGBoost en arrière-plan
+  GET  /train/{site_id}/status    → état de l'entraînement
 
 Au démarrage : modèle XGBoost + historique CSV + calendrier chargés en cache par site.
 Les requêtes /predict n'accèdent ni à MLflow ni aux APIs calendrier.
 Seul Open-Meteo (météo J+7) est appelé à chaque prédiction.
 """
+import asyncio
 import logging
 from contextlib import asynccontextmanager
+from typing import Literal
 
-from fastapi import FastAPI, HTTPException
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 import pandas as pd
@@ -26,6 +31,9 @@ log = logging.getLogger(__name__)
 
 # { site_id: (model, capacite, historique, feries, vacances_periodes) }
 MODEL_CACHE: dict = {}
+
+# { site_id: "idle" | "training" | "done" | "error" }
+TRAINING_STATUS: dict[str, str] = {}
 
 
 @asynccontextmanager
@@ -63,7 +71,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
@@ -88,6 +96,74 @@ def list_sites():
         }
         for site_id, cfg in SITES.items()
     ]
+
+
+@app.get("/history/{site_id}")
+def history(
+    site_id: str,
+    from_date: str = Query(..., alias="from", description="Date de début (YYYY-MM-DD)"),
+    to_date: str = Query(..., alias="to",   description="Date de fin   (YYYY-MM-DD)"),
+):
+    if site_id not in SITES:
+        raise HTTPException(status_code=404, detail=f"Site '{site_id}' inconnu.")
+    cfg = SITES[site_id]
+    if cfg.get("journalier_csv") is None:
+        raise HTTPException(status_code=404, detail="Pas de données CSV pour ce site.")
+
+    df = pd.read_csv(DATA_DIR / cfg["journalier_csv"], sep=";", encoding="utf-8-sig")
+    df["date"] = pd.to_datetime(df["date"])
+    df = df[df["jour_complet"] == 1]
+    date_str = df["date"].dt.strftime("%Y-%m-%d")
+    mask = (date_str >= from_date) & (date_str <= to_date)
+    result = df[mask][["date", "passages_jour"]].copy()
+    result["date"] = result["date"].dt.strftime("%Y-%m-%d")
+    return result.to_dict(orient="records")
+
+
+@app.post("/train/{site_id}")
+async def train_site(site_id: str, background_tasks: BackgroundTasks):
+    if site_id not in SITES:
+        raise HTTPException(status_code=404, detail=f"Site '{site_id}' inconnu.")
+    cfg = SITES[site_id]
+    if cfg.get("journalier_csv") is None:
+        raise HTTPException(status_code=422, detail="Pas de CSV disponible pour ce site.")
+    if TRAINING_STATUS.get(site_id) == "training":
+        return {"status": "already_training"}
+
+    TRAINING_STATUS[site_id] = "training"
+    background_tasks.add_task(_train_and_reload, site_id)
+    return {"status": "started"}
+
+
+@app.get("/train/{site_id}/status")
+def train_status(site_id: str):
+    if site_id not in SITES:
+        raise HTTPException(status_code=404, detail=f"Site '{site_id}' inconnu.")
+    return {
+        "status": TRAINING_STATUS.get(site_id, "idle"),
+        "ready":  site_id in MODEL_CACHE,
+    }
+
+
+async def _train_and_reload(site_id: str) -> None:
+    from train import run_training  # import tardif pour éviter les effets de bord au démarrage
+    cfg = SITES[site_id]
+    try:
+        await asyncio.to_thread(run_training, cfg, MLFLOW_CFG["uri"])
+        model, capacite = await asyncio.to_thread(
+            charger_meilleur_modele, cfg, MLFLOW_CFG["uri"], MLFLOW_CFG["max_results"]
+        )
+        df_j = pd.read_csv(DATA_DIR / cfg["journalier_csv"], sep=";", encoding="utf-8-sig")
+        df_j["date"] = pd.to_datetime(df_j["date"])
+        df_j = df_j[df_j["jour_complet"] == 1]
+        historique = df_j.set_index("date")["passages_jour"].sort_index()
+        feries, vacances_periodes = charger_calendrier_local()
+        MODEL_CACHE[site_id] = (model, capacite, historique, feries, vacances_periodes)
+        TRAINING_STATUS[site_id] = "done"
+        log.info("Entraînement terminé et modèle rechargé : %s", site_id)
+    except Exception as e:
+        log.error("Erreur entraînement %s : %s", site_id, e)
+        TRAINING_STATUS[site_id] = "error"
 
 
 @app.get("/predict/{site_id}")

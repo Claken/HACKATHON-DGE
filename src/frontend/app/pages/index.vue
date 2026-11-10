@@ -15,6 +15,8 @@ const {
   loading,
   error,
   today,
+  trainStatus,
+  trainSite,
 } = useDashboard();
 const longDate = (date: string) =>
   formatDate(date, {
@@ -23,6 +25,18 @@ const longDate = (date: string) =>
     month: "long",
     year: "numeric",
   });
+
+const isTraining = computed(() => trainStatus.value === "training");
+const isTrainError = computed(() => trainStatus.value === "error");
+function goToHerretang() {
+  siteId.value = "herretang";
+  today();
+}
+const trainLabel = computed(() => {
+  if (trainStatus.value === "training") return "Entraînement en cours…";
+  if (trainStatus.value === "done") return "Modèle prêt — rechargement…";
+  return "Entraîner le modèle";
+});
 </script>
 <template>
   <SiteHeader :site-name="site.name" />
@@ -75,6 +89,7 @@ const longDate = (date: string) =>
       Prévisions jusqu’au {{ formatDate(offsetDate(anchor, 6)) }} inclus · 7
       jours à compter d’aujourd’hui
     </p>
+    <!-- Détail prévision (jours futurs) -->
     <template v-if="selected?.forecast && selected.level">
       <div class="selected-day-heading">
         <span>Détail de la journée</span
@@ -120,6 +135,30 @@ const longDate = (date: string) =>
         :date="longDate(selected.date)"
       />
     </template>
+
+    <!-- Détail historique (jours passés avec données CSV) -->
+    <template v-else-if="selected?.historical !== null && selected?.historical !== undefined && selected.level">
+      <div class="selected-day-heading">
+        <span>Données observées</span
+        ><strong>{{ longDate(selected.date) }}</strong>
+      </div>
+      <section class="summary-grid">
+        <div class="metric">
+          <span class="muted small">Niveau de fréquentation</span>
+          <div class="value">{{ levelLabels[selected.level] }}</div>
+          <span class="small"><i class="dot" :class="selected.level" />Comptage réel · source CSV</span>
+        </div>
+        <div class="metric">
+          <span class="muted small">Passages observés sur la journée</span>
+          <div class="value">
+            {{ selected.historical }} <small>passages</small>
+          </div>
+          <span class="muted small">À l’accès Tuilerie · passages entrants</span>
+        </div>
+      </section>
+    </template>
+
+    <!-- Aucune donnée disponible pour la période -->
     <section v-else class="empty">
       <h2>
         {{
@@ -135,13 +174,19 @@ const longDate = (date: string) =>
             : `Le site ${site.name} est sélectionné. Ses prévisions restent à connecter.`
         }}
       </p>
-      <button
-        class="today-button"
-        @click="
-          siteId = 'herretang';
-          today();
-        "
-      >
+      <template v-if="!site.available && site.has_data">
+        <button
+          class="today-button"
+          :disabled="isTraining"
+          @click="trainSite"
+        >
+          {{ trainLabel }}
+        </button>
+        <p v-if="isTrainError" class="muted small" style="margin-top:.5rem">
+          Erreur durant l’entraînement. Vérifiez les logs de l’API.
+        </p>
+      </template>
+      <button v-else class="today-button" @click="goToHerretang">
         Revenir à l’Herretang · aujourd’hui
       </button>
     </section>

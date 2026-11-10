@@ -7,10 +7,10 @@ import {
   offsetDate,
   risk,
 } from "~/utils/forecast";
-import type { SiteInfo, PredictResponse } from "~/composables/useApi";
+import type { SiteInfo, PredictResponse, TrainStatus } from "~/composables/useApi";
 
 export function useDashboard() {
-  const { fetchSites, fetchPredict } = useApi();
+  const { fetchSites, fetchPredict, fetchHistory, triggerTrain, fetchTrainStatus } = useApi();
 
   const anchor = useState("forecast-anchor", () =>
     new Intl.DateTimeFormat("en-CA", {
@@ -29,9 +29,16 @@ export function useDashboard() {
   const error = ref<string | null>(null);
   const apiSites = ref<SiteInfo[]>([]);
   const predictData = ref<PredictResponse | null>(null);
+  const historyData = ref<Record<string, number>>({});
+  const trainStatus = ref<TrainStatus>("idle");
 
   const sites = computed(() =>
-    apiSites.value.map((s) => ({ id: s.id, name: s.nom, available: s.ready })),
+    apiSites.value.map((s) => ({
+      id: s.id,
+      name: s.nom,
+      available: s.ready,
+      has_data: s.has_data,
+    })),
   );
   const site = computed(
     () =>
@@ -39,6 +46,7 @@ export function useDashboard() {
         id: siteId.value,
         name: siteId.value,
         available: false,
+        has_data: false,
       },
   );
   const monday = computed(() => mondayOffset(anchor.value));
@@ -77,6 +85,48 @@ export function useDashboard() {
     }
   }
 
+  async function loadHistory(id: string, from: string, to: string) {
+    if (!site.value.has_data) {
+      historyData.value = {};
+      return;
+    }
+    try {
+      const entries = await fetchHistory(id, from, to);
+      const map: Record<string, number> = {};
+      for (const e of entries) map[e.date] = e.passages_jour;
+      historyData.value = map;
+    } catch {
+      historyData.value = {};
+    }
+  }
+
+  // Polling d'état de l'entraînement
+  let trainPollTimer: ReturnType<typeof setInterval> | undefined;
+
+  async function trainSite() {
+    trainStatus.value = "training";
+    try {
+      await triggerTrain(siteId.value);
+    } catch {
+      trainStatus.value = "error";
+      return;
+    }
+    trainPollTimer = setInterval(async () => {
+      try {
+        const { status, ready } = await fetchTrainStatus(siteId.value);
+        if (status === "done" || ready) {
+          clearInterval(trainPollTimer);
+          trainStatus.value = "done";
+          await loadSites();
+          await loadPredict(siteId.value);
+        } else if (status === "error") {
+          clearInterval(trainPollTimer);
+          trainStatus.value = "error";
+        }
+      } catch {}
+    }, 3000);
+  }
+
   function refreshDate() {
     const date = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Europe/Paris",
@@ -100,6 +150,7 @@ export function useDashboard() {
   });
   onUnmounted(() => {
     clearInterval(timer);
+    clearInterval(trainPollTimer);
     window.removeEventListener("focus", refreshDate);
     document.removeEventListener("visibilitychange", refreshDate);
   });
@@ -120,11 +171,20 @@ export function useDashboard() {
             reference: dayData.passages_reference,
           }
         : null;
+      const historical =
+        !forecast && date < anchor.value && site.value.has_data
+          ? (historyData.value[date] ?? null)
+          : null;
       const vacation = vacations.find((v) => date >= v.start && date < v.end);
       return {
         date,
         forecast,
-        level: forecast ? risk(forecast.total, thresholds.value) : null,
+        historical,
+        level: forecast
+          ? risk(forecast.total, thresholds.value)
+          : historical !== null
+            ? risk(historical, thresholds.value)
+            : null,
         holiday: (holidays as Record<string, string>)[date],
         vacation: vacation?.name,
         today: date === anchor.value,
@@ -133,8 +193,25 @@ export function useDashboard() {
     }),
   );
 
+  // Charger l'historique quand on navigue vers une semaine passée
+  watch(
+    [week, siteId],
+    ([w, id]) => {
+      if (w < 0) {
+        const from = cards.value[0]!.date;
+        const to = cards.value[6]!.date;
+        loadHistory(id, from, to);
+      } else {
+        historyData.value = {};
+      }
+    },
+    { flush: "post" },
+  );
+
   const selected = computed(() =>
-    cards.value.find((c) => c.date === selectedDate.value && c.forecast),
+    cards.value.find(
+      (c) => c.date === selectedDate.value && (c.forecast !== null || c.historical !== null),
+    ),
   );
   const periodLabel = computed(() => {
     const first = cards.value[0]!.date;
@@ -150,10 +227,14 @@ export function useDashboard() {
     );
   });
   function selectFirstAvailable() {
-    selectedDate.value = cards.value.find((c) => c.forecast)?.date ?? "";
+    selectedDate.value =
+      cards.value.find((c) => c.forecast !== null || c.historical !== null)?.date ?? "";
   }
   watch([week, siteId], selectFirstAvailable, { flush: "sync" });
-  watch(siteId, (id) => loadPredict(id));
+  watch(siteId, (id) => {
+    trainStatus.value = "idle";
+    loadPredict(id);
+  });
   function today() {
     week.value = 0;
     selectedDate.value = anchor.value;
@@ -173,5 +254,7 @@ export function useDashboard() {
     loading,
     error,
     today,
+    trainStatus,
+    trainSite,
   };
 }

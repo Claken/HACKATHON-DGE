@@ -6,6 +6,7 @@ defineProps<{
     today: boolean;
     past: boolean;
     forecast: { total: number } | null;
+    historical: number | null;
     level: Level | null;
     holiday?: string;
     vacation?: string;
@@ -26,8 +27,12 @@ const emit = defineEmits<{ select: [date: string] }>();
         v-for="day in cards"
         :key="day.date"
         class="day-card"
-        :class="{ selected: selected === day.date, unavailable: !day.forecast }"
-        :disabled="!day.forecast"
+        :class="{
+          selected: selected === day.date,
+          unavailable: !day.forecast && day.historical === null,
+          observed: day.historical !== null && !day.forecast,
+        }"
+        :disabled="!day.forecast && day.historical === null"
         :aria-pressed="selected === day.date"
         :aria-label="
           formatDate(day.date, {
@@ -42,13 +47,15 @@ const emit = defineEmits<{ select: [date: string] }>();
           ><span>{{ formatDate(day.date, { weekday: "short" }) }}</span
           ><strong>{{ Number(day.date.slice(-2)) }}</strong></span
         >
-        <span class="today-marker">{{ day.today ? "Aujourd’hui" : " " }}</span>
-        <strong class="day-total">{{ day.forecast?.total ?? "—" }}</strong
+        <span class="today-marker">{{ day.today ? "Aujourd'hui" : " " }}</span>
+        <strong class="day-total">{{
+          day.forecast?.total ?? (day.historical !== null ? day.historical : "—")
+        }}</strong
         ><span class="small muted">{{
-          day.forecast ? "passages" : "Non disponible"
+          day.forecast ? "passages" : day.historical !== null ? "observés" : "Non disponible"
         }}</span>
         <span v-if="day.level" class="badge" :class="day.level">{{
-          levelLabels[day.level]
+          day.historical !== null && !day.forecast ? "Observé" : levelLabels[day.level]
         }}</span
         ><span v-else class="small muted">{{
           !connected ? "Non connecté" : day.past ? "Passé" : "Hors prévision"

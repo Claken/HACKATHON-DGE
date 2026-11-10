@@ -23,6 +23,18 @@ export interface PredictResponse {
   predictions: DayForecast[];
 }
 
+export interface HistoryEntry {
+  date: string;
+  passages_jour: number;
+}
+
+export type TrainStatus = "idle" | "training" | "done" | "error";
+
+export interface TrainStatusResponse {
+  status: TrainStatus;
+  ready: boolean;
+}
+
 export function useApi() {
   const config = useRuntimeConfig();
   const base = config.public.apiBase as string;
@@ -35,5 +47,19 @@ export function useApi() {
     return $fetch<PredictResponse>(`${base}/predict/${siteId}`);
   }
 
-  return { fetchSites, fetchPredict };
+  async function fetchHistory(siteId: string, from: string, to: string): Promise<HistoryEntry[]> {
+    return $fetch<HistoryEntry[]>(`${base}/history/${siteId}`, {
+      params: { from, to },
+    });
+  }
+
+  async function triggerTrain(siteId: string): Promise<{ status: string }> {
+    return $fetch<{ status: string }>(`${base}/train/${siteId}`, { method: "POST" });
+  }
+
+  async function fetchTrainStatus(siteId: string): Promise<TrainStatusResponse> {
+    return $fetch<TrainStatusResponse>(`${base}/train/${siteId}/status`);
+  }
+
+  return { fetchSites, fetchPredict, fetchHistory, triggerTrain, fetchTrainStatus };
 }
