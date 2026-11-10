@@ -83,7 +83,7 @@ const peakY = computed(() => y(props.peak));
           <stop offset="1" stop-color="#790bd0" stop-opacity="0" />
         </linearGradient>
       </defs>
-      <text x="48" y="34" font-size="11" fill="#777">Passages / heure</text>
+      <text x="48" y="34" font-size="13" fill="#777">Passages / heure</text>
       <g v-for="line in grid" :key="line.value">
         <line
           x1="48"
@@ -96,7 +96,7 @@ const peakY = computed(() => y(props.peak));
           x="38"
           :y="line.y + 4"
           text-anchor="end"
-          font-size="11"
+          font-size="13"
           fill="#666"
         >{{ line.value }}</text>
       </g>
@@ -112,7 +112,7 @@ const peakY = computed(() => y(props.peak));
           :x="guide.x"
           y="328"
           text-anchor="middle"
-          font-size="11"
+          font-size="13"
           fill="#777"
         >{{ guide.hour }} h</text>
       </g>
@@ -136,7 +136,7 @@ const peakY = computed(() => y(props.peak));
         x="431"
         :y="y(threshold) - 7"
         text-anchor="end"
-        font-size="10"
+        font-size="12"
         fill="#8b7319"
       >Vigilance · {{ threshold }} / h</text>
       <path
@@ -168,7 +168,7 @@ const peakY = computed(() => y(props.peak));
         :y="peakY - 26"
         text-anchor="middle"
         fill="white"
-        font-size="10"
+        font-size="12"
       >Pic · {{ peak }} / h</text>
     </svg>
     <div class="legend">

@@ -173,7 +173,7 @@ function fmtPct(v: number | null | undefined): string {
   align-items: center;
   gap: 12px;
   margin-bottom: 28px;
-  font-size: 14px;
+  font-size: 16px;
 }
 .model-controls label {
   color: var(--text-muted);
@@ -183,14 +183,14 @@ function fmtPct(v: number | null | undefined): string {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-xs);
   background: var(--bg-page);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .method-note {
   background: var(--bg-subtle);
   border-radius: var(--radius-md);
   padding: 14px 18px;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-muted);
   margin-bottom: 36px;
   line-height: 1.6;
@@ -202,7 +202,7 @@ function fmtPct(v: number | null | undefined): string {
 }
 
 h2 {
-  font-size: 17px;
+  font-size: 19px;
   font-weight: 700;
   color: var(--text-title);
   margin: 0 0 16px;
@@ -214,7 +214,7 @@ h2 {
 .runs-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 15px;
 }
 .runs-table th {
   text-align: left;
@@ -242,21 +242,21 @@ h2 {
   border-radius: var(--radius-pill);
   background: var(--blue-france);
   color: #fff;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
 }
 .run-name {
   color: var(--text-muted);
 }
 .table-note {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-muted);
   margin: 10px 0 0;
   line-height: 1.8;
 }
 
 .fi-intro {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-muted);
   margin: 0 0 20px;
   line-height: 1.6;
@@ -273,7 +273,7 @@ h2 {
   gap: 14px;
 }
 .fi-label {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-body);
 }
 .fi-bar-wrap {
@@ -289,7 +289,7 @@ h2 {
   transition: width 0.4s ease;
 }
 .fi-val {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--text-muted);
   text-align: right;
   font-variant-numeric: tabular-nums;

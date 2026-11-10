@@ -27,9 +27,7 @@ defineProps<{
         <div>Anticiper les flux touristiques</div>
       </div>
       <nav class="nav">
-        <a href="/#previsions">← Prévisions</a
-        ><a href="/#semaine">← Vue à 7 jours</a
-        ><a href="/#sources">← Données</a
+        <NuxtLink to="/" class="nav-page">Tableau de bord</NuxtLink
         ><NuxtLink to="/modele" class="nav-page">Performance du modèle</NuxtLink>
       </nav>
     </div>
