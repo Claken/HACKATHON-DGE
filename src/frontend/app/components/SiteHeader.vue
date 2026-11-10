@@ -23,8 +23,8 @@ defineProps<{
         </svg>
       </div>
       <div class="brand">
-        <strong>Anticiper les flux touristiques</strong>
-        <div>Un tableau de bord pour les gestionnaires de sites</div>
+        <strong>antaudiro</strong>
+        <div>Anticiper les flux touristiques</div>
       </div>
       <nav class="nav">
         <a href="/#previsions">← Prévisions</a
