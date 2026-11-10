@@ -1,11 +1,4 @@
-:root {
-  --ink: #252525;
-  --muted: #656565;
-  --panel: #dedede;
-  --purple: #790bd0;
-  --line: #e7e7e7;
-  --amber: #ffcf00;
-}
+/* tokens définis dans tokens.css — importé en premier par nuxt.config.ts */
 * {
   box-sizing: border-box;
 }

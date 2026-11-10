@@ -22,3 +22,6 @@ src/frontend/.env
 
 # Racine
 .env
+
+# Claude Code
+.claude/worktrees/

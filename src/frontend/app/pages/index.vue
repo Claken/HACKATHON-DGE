@@ -127,18 +127,18 @@ const trainLabel = computed(() => {
               stroke-linecap="round"
               aria-hidden="true"
             >
-              <template v-if="selected.forecast.rain === 0">
+              <g v-if="selected.forecast.rain === 0">
                 <circle cx="20" cy="20" r="7" />
                 <path
                   d="M20 3v5m0 24v5M3 20h5m24 0h5M8 8l4 4m16 16 4 4M8 32l4-4M28 12l4-4"
                 />
-              </template>
-              <template v-else>
+              </g>
+              <g v-else>
                 <path
                   d="M10 26a7 7 0 1 1 1-14 9 9 0 0 1 17 2 6 6 0 0 1 1 12H10Z"
                 />
                 <path d="m14 30-2 5m9-5-2 5m9-5-2 5" />
-              </template>
+              </g>
             </svg>
             <div class="value">
               {{
@@ -164,7 +164,6 @@ const trainLabel = computed(() => {
           :date="longDate(selected.date)"
         />
     </template>
-    <ThresholdSettings v-model="thresholds" />
 
     <!-- Détail historique (jours passés avec données CSV) -->
     <template v-else-if="selected?.historical !== null && selected?.historical !== undefined && selected.level">
@@ -216,10 +215,8 @@ const trainLabel = computed(() => {
           Erreur durant l’entraînement. Vérifiez les logs de l’API.
         </p>
       </template>
-      <button v-else class="today-button" @click="goToHerretang">
-        Revenir à l’Herretang · aujourd’hui
-      </button>
     </section>
+    <ThresholdSettings v-model="thresholds" />
     <details class="trust" id="sources">
       <summary>Sources, fiabilité et limites de la prévision</summary>
       <p>
