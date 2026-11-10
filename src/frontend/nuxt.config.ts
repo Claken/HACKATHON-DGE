@@ -6,8 +6,9 @@ export default defineNuxtConfig({
   },
   devtools: { enabled: false },
   runtimeConfig: {
+    apiBaseInternal: "http://api:8000",
     public: {
-      apiBase: "http://localhost:8000",
+      apiBase: "/api",
     },
   },
 });

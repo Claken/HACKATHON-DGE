@@ -4,7 +4,9 @@ import type { SiteInfo, MetricsResponse } from '~/composables/useApi'
 useHead({ title: "Performance du modèle — Isère" })
 
 const config = useRuntimeConfig()
-const base = config.public.apiBase
+const base = import.meta.server
+  ? ((config.apiBaseInternal as string) || (config.public.apiBase as string))
+  : (config.public.apiBase as string)
 
 const { data: sitesData } = await useFetch<SiteInfo[]>(`${base}/sites`)
 const trainedSites = computed(() => (sitesData.value ?? []).filter(s => s.has_data))

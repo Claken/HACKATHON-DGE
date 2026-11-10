@@ -64,7 +64,9 @@ export interface MetricsResponse {
 
 export function useApi() {
   const config = useRuntimeConfig();
-  const base = config.public.apiBase as string;
+  const base = import.meta.server
+    ? ((config.apiBaseInternal as string) || (config.public.apiBase as string))
+    : (config.public.apiBase as string);
 
   async function fetchSites(): Promise<SiteInfo[]> {
     return $fetch<SiteInfo[]>(`${base}/sites`);
