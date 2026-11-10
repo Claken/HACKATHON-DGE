@@ -32,7 +32,7 @@ L'application est composée de deux services Docker orchestrés par `docker-comp
 | `train.py`    | Entraînement XGBoost, logging MLflow (CLI uniquement)       |
 | `sites.py`    | Catalogue multi-sites (coords, seuils, chemins CSV)         |
 | `config.py`   | MLflow URI, liste de features, hyperparamètres              |
-| `utils.py`    | Chargement CSV, agrégation, fetch température historique    |
+| `utils.py`    | Fetch température historique (Open-Meteo Archive)           |
 
 ### Endpoints
 
@@ -70,8 +70,8 @@ L'application est composée de deux services Docker orchestrés par `docker-comp
 ### Sources de données externes (appelées à la prédiction)
 
 - **Open-Meteo Forecast** — prévisions météo J+7 (gratuit, sans clé)
-- **calendrier.api.gouv.fr** — jours fériés métropolitains
-- **data.education.gouv.fr** — vacances scolaires Zone A (académie Grenoble)
+
+Jours fériés et vacances scolaires sont chargés depuis des fichiers JSON bundlés dans `src/data/calendrier/` — aucun appel API à la prédiction.
 
 ## Service `frontend` — Nuxt 3 (SSR)
 
@@ -104,7 +104,7 @@ cp .env.example .env
 # 2. Entraîner le modèle (une fois, hors Docker)
 cd src/api && python train.py --site herretang
 
-# 4. Lancer l'ensemble
+# 3. Lancer l'ensemble
 docker compose up --build
 ```
 
@@ -125,8 +125,17 @@ docker compose up --build
 │   ├── frontend/           # Service Nuxt 3
 │   │   ├── Dockerfile
 │   │   └── ...             # à init avec : npx nuxi init src/frontend
-│   ├── data/               # CSV de fréquentation et météo (montés en lecture seule)
-│   │   └── herretang_2023_2025/
+│   ├── data/               # Données de fréquentation + calendrier bundlé (montés en lecture seule)
+│   │   ├── calendrier/
+│   │   │   ├── jours_feries_metropole.json
+│   │   │   └── vacances_grenoble.json
+│   │   ├── herretang_2020_2025/
+│   │   ├── veronniere_2020_2025/
+│   │   ├── ecouges_pont_chabert_2020_2025/
+│   │   ├── etang_serre_observatoire_2020_2025/
+│   │   ├── etang_lemps_sentier_2020_2025/
+│   │   ├── etang_lemps_observatoire_2020_2025/
+│   │   └── lac_save_ouest_2020_2025/
 │   └── docs/               # Documentation
 │   └── docker-compose.yml
 ├── .env.example

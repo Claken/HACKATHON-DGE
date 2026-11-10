@@ -10,10 +10,10 @@ Valider un modèle de prédiction ne se réduit pas à calculer une erreur sur u
 La stratégie mise en place repose sur **trois niveaux de test imbriqués** et une **comparaison à une baseline naïve**. Chaque niveau répond à une question différente et produit des métriques interprétables par les gestionnaires de sites.
 
 ```
-Données 2023-2024-2025-2026
+Données 2020-2024-2025-2026
 │
 ├── Niveau 1 : Split Train / Holdout
-│   ├── Train     2023–2024  →  entraînement du modèle
+│   ├── Train     2020–2024  →  entraînement du modèle
 │   └── Holdout   2025       →  sélection du meilleur run + première évaluation
 │
 ├── Niveau 2 : Comparaison baseline naïve
@@ -33,8 +33,8 @@ Le jeu de données est découpé **chronologiquement** : les années les plus an
 
 | Jeu | Période | Rôle | Taille (Herretang) |
 |---|---|---|---|
-| Train | 2023–2024 | Apprentissage des paramètres XGBoost | ~720 jours |
-| Holdout | 2025 | Évaluation et sélection du meilleur run | ~350 jours |
+| Train | 2020–2024 | Apprentissage des paramètres XGBoost | ~1 826 jours |
+| Holdout | 2025 | Évaluation et sélection du meilleur run | ~365 jours |
 
 ### Pourquoi une découpe temporelle et non aléatoire ?
 
@@ -91,10 +91,10 @@ La baseline peut être calculée directement sur le holdout sans entraînement :
 # Calcul de la MAE baseline sur le holdout 2025
 python3 -c "
 import pandas as pd, numpy as np
-df = pd.read_csv('src/data/herretang_2023_2025/frequentation_herretang_2023_2025.csv', sep=';')
-df = df[df['qualite_frequentation'] == 'valide'].copy()
+df = pd.read_csv('src/data/herretang_2020_2025/journalier_herretang_2020_2025.csv', sep=';', encoding='utf-8-sig')
+df = df[df['jour_complet'] == 1].copy()
 df['date'] = pd.to_datetime(df['date'])
-daily = df.groupby('date')['passages_entrants'].sum()
+daily = df.set_index('date')['passages_jour'].sort_index()
 hold = daily[daily.index.year == 2025]
 pred = hold.index.map(lambda d: daily.get(d - pd.Timedelta(days=7), np.nan))
 valid = ~pd.isna(pred)
@@ -127,7 +127,7 @@ Chronologie des données
 
 ### Données utilisées en 2026
 
-Les archives ENS CG38 Environnement fournissent les comptages réels pour 2026 (jusqu'à mai 2026 pour Herretang). La météo est récupérée via l'API Open-Meteo archive, identique à la source utilisée à l'entraînement. Le calendrier officiel (jours fériés, vacances) est obtenu via les APIs gouvernementales.
+Les archives ENS CG38 Environnement fournissent les comptages réels pour 2026 (jusqu'à mai 2026 pour Herretang). La météo est récupérée via l'API Open-Meteo archive, identique à la source utilisée à l'entraînement. Le calendrier (jours fériés, vacances) est chargé depuis les fichiers JSON bundlés dans `src/data/calendrier/`.
 
 ### Résultat A — Semaine du 15 au 21 avril 2026 (mode `single`)
 
@@ -291,28 +291,31 @@ Tester le pipeline sur plusieurs sites ENS remplit deux objectifs :
 
 ### Sites disponibles pour l'extension multi-sites
 
-Les sites suivants sont préconfigurés dans `sites.py` avec leurs coordonnées et canaux ENS :
+Les 7 sites suivants sont préconfigurés dans `sites.py` avec leurs CSV journaliers 2020–2025 :
 
-| Identifiant | Nom | Commune | Type de site |
-|---|---|---|---|
-| `herretang` | Tourbières de l'Herretang — Tuilerie | Saint-Joseph-de-Rivière | Zone humide protégée |
-| `col-du-coq` | Col du Coq — Perquelin | Saint-Hilaire | Col de montagne, randonnée |
-| `etang-serre` | Étang de la Serre — Observatoire | Sermerieu | Plan d'eau, nature |
-| `etang-lemps` | Étang de Lemps — Sentier | Bouvesse-Quirieu | Plan d'eau, nature |
+| Identifiant | Nom | Commune |
+|---|---|---|
+| `herretang` | Herretang — Tuilerie | Saint-Joseph-de-Rivière |
+| `veronniere` | Marais de la Véronnière | Morestel |
+| `ecouges_pont_chabert` | Écouges — Pont Chabert piéton | Cognin-les-Gorges |
+| `etang_serre_observatoire` | Étang de la Serre — observatoire | Sermerieu |
+| `etang_lemps_sentier` | Étang de Lemps — sentier | Bouvesse-Quirieu |
+| `etang_lemps_observatoire` | Étang de Lemps — observatoire | Bouvesse-Quirieu |
+| `lac_save_ouest` | Lac de Save — ouest | Optevoz |
 
-Ces quatre sites couvrent des altitudes (280 m à 1 430 m), des saisons de pointe et des typologies d'usage distincts, ce qui constitue un bon panel de validation pour confirmer la robustesse du pipeline.
+Ces sites couvrent des typologies d'usage variées (zone humide, forêt, plan d'eau), ce qui constitue un bon panel pour valider la robustesse des features.
 
 ### Lancer l'entraînement et le backtest sur un autre site
 
 ```bash
-# Entraîner sur Col du Coq
-python3 src/api/train.py --site col-du-coq
+# Entraîner sur Véronnière
+python3 src/api/train.py --site veronniere
 
-# Backtest Col du Coq
-python3 src/poc_backtest.py --site col-du-coq --date 2026-04-15
+# Backtest Véronnière
+python3 src/poc_backtest.py --site veronniere --date 2026-04-15
 
 # Comparer les résultats MLflow
-# → Experiment "flux-touristique-poc" contient des runs tagués par site
+# → Chaque site a sa propre expérience "flux-touristique-{site_id}"
 ```
 
 ---
@@ -325,7 +328,6 @@ python3 src/poc_backtest.py --site col-du-coq --date 2026-04-15
 |---|---|---|
 | Événements non capturés | Pics majeurs non prévus (ex. +400 % le 15/04/2026) | Intégrer l'agenda culturel (Apidae, OpenAgenda) |
 | Lags imparfaits en projection | Pour J+7, le lag J-1 n'existe pas encore | Remplacer par une prédiction en chaîne ou un intervalle de confiance |
-| Données limitées à 2 ans de train | Patterns inter-annuels peu représentés | Étendre à 2021–2024 dès que les archives historiques sont intégrées |
 | Capacité non formalisée | P90 est une approximation | Calibrer avec les gestionnaires de chaque site |
 | `weekend` redondant | XGBoost lui attribue une importance nulle | Supprimer de la liste de features |
 
@@ -336,7 +338,7 @@ python3 src/poc_backtest.py --site col-du-coq --date 2026-04-15
 | Holdout utilisé pour la sélection | La MAE de 20.31 est biaisée à la baisse — un 4ème jeu de test strictement indépendant éliminerait ce biais |
 | Backtest limité au printemps 2026 | Les archives ENS Herretang s'arrêtent en mai 2026 — on ne peut pas tester l'été ni l'automne 2026 |
 | Pas de validation croisée temporelle | Leave-one-year-out donnerait une estimation de variance plus robuste, mais complexifie l'explication au client |
-| Test multi-sites non encore exécuté | La portabilité est implémentée (`sites.py`) mais pas encore mesurée sur les 3 autres sites |
+| Test multi-sites non encore exécuté | La portabilité est implémentée (`sites.py`) avec 7 sites, mais les modèles n'ont pas encore été entraînés sur tous |
 
 ### Interprétation pour la mise en production
 
