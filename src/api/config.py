@@ -22,10 +22,15 @@ MLFLOW = {
     "metric_best": "mae_holdout",
 }
 
+# Transformation log1p de la cible à l'entraînement (expm1 à la prédiction).
+# Réduit l'influence des pics extrêmes sur la loss XGBoost et améliore la MAE
+# sur les queues hautes (journées de sur-fréquentation).
+LOG_TRANSFORM = True
+
 FEATURES = [
     "mois", "jour_semaine", "weekend", "jour_ferie", "vacances_scolaires_zone_a",
     "temperature_moy", "precipitations_mm", "pluie_heures", "neige_oui_non_jour",
-    "passages_j1", "passages_j7",
+    "passages_j1", "passages_j7", "passages_j365",
 ]
 
 HYPERPARAMETRES = [

@@ -24,7 +24,7 @@ import mlflow.xgboost
 import xgboost as xgb
 from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 
-from config import MLFLOW as MLFLOW_CFG, FEATURES, HYPERPARAMETRES, DATA_DIR
+from config import MLFLOW as MLFLOW_CFG, FEATURES, HYPERPARAMETRES, DATA_DIR, LOG_TRANSFORM
 from sites import SITES, DEFAULT_SITE
 from utils import fetch_temperature_historique
 
@@ -61,11 +61,19 @@ def run_training(site_cfg: dict, mlflow_uri: str) -> None:
     daily = daily.sort_values("date").reset_index(drop=True)
     daily["passages_j1"] = daily["passages_jour"].shift(1)
     daily["passages_j7"] = daily["passages_jour"].shift(7)
-    daily = daily.dropna(subset=["passages_j1", "passages_j7", "temperature_moy"])
 
-    train   = daily[daily["date"].dt.year < 2025].copy()
+    # J-365 via merge par date (robuste aux jours manquants)
+    lag365 = daily[["date", "passages_jour"]].copy()
+    lag365["date"] = lag365["date"] + pd.Timedelta(days=365)
+    lag365 = lag365.rename(columns={"passages_jour": "passages_j365"})
+    daily = daily.merge(lag365, on="date", how="left")
+
+    daily = daily.dropna(subset=["passages_j1", "passages_j7", "passages_j365", "temperature_moy"])
+
+    # 2020-2021 exclus : données COVID atypiques (confinements, réouvertures)
+    train   = daily[(daily["date"].dt.year >= 2022) & (daily["date"].dt.year < 2025)].copy()
     holdout = daily[daily["date"].dt.year == 2025].copy()
-    log.info("Split : %d jours train | %d jours holdout", len(train), len(holdout))
+    log.info("Split : %d jours train (2022–2024) | %d jours holdout (2025)", len(train), len(holdout))
 
     X_train   = train[FEATURES].values
     y_train   = train["passages_jour"].values
@@ -106,16 +114,19 @@ def run_training(site_cfg: dict, mlflow_uri: str) -> None:
             mlflow.log_param("seuil_eleve",          seuils["eleve"])
 
             model = xgb.XGBRegressor(**params, random_state=42)
-            model.fit(X_train, y_train)
+            y_train_fit = np.log1p(y_train) if LOG_TRANSFORM else y_train
+            model.fit(X_train, y_train_fit)
 
-            preds = np.clip(model.predict(X_holdout), 0, None)
+            preds_raw = model.predict(X_holdout)
+            preds = np.clip(np.expm1(preds_raw) if LOG_TRANSFORM else preds_raw, 0, None)
             mae   = mean_absolute_error(y_holdout, preds)
             rmse  = root_mean_squared_error(y_holdout, preds)
-            mape  = float(np.mean(np.abs((y_holdout - preds) / np.clip(y_holdout, 1, None))) * 100)
+            mediane_holdout = float(np.median(y_holdout))
+            mae_norm = round(mae / mediane_holdout * 100, 2) if mediane_holdout > 0 else 0.0
 
-            mlflow.log_metric("mae_holdout",  round(mae,  2))
-            mlflow.log_metric("rmse_holdout", round(rmse, 2))
-            mlflow.log_metric("mape_holdout", round(mape, 2))
+            mlflow.log_metric("mae_holdout",           round(mae,      2))
+            mlflow.log_metric("rmse_holdout",          round(rmse,     2))
+            mlflow.log_metric("mae_normalisee_holdout", mae_norm)
 
             vraie_charge = y_holdout / capacite
             pred_charge  = preds     / capacite
@@ -129,8 +140,8 @@ def run_training(site_cfg: dict, mlflow_uri: str) -> None:
             mlflow.xgboost.log_model(model, name="model")
 
             log.info(
-                "  MAE=%.1f passages/j | RMSE=%.1f | MAPE=%.1f%% | Alertes élevées correctes=%.0f%%",
-                mae, rmse, mape, bonne_alerte * 100,
+                "  MAE=%.1f passages/j | RMSE=%.1f | MAE/médiane=%.0f%% | Alertes élevées correctes=%.0f%%",
+                mae, rmse, mae_norm, bonne_alerte * 100,
             )
 
     log.info("Terminé — ouvre MLflow UI > Experiments > %s", site_cfg["mlflow_experiment"])

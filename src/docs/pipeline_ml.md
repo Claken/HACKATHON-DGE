@@ -33,15 +33,15 @@ flowchart TD
     subgraph TRAIN["train.py — Entraînement"]
         T1["Lecture CSV journalier\nfiltre jour_complet == 1"]
         T2["Ajout température\n(Open-Meteo archive)"]
-        T3["Features de lag\nj-1, j-7"]
+        T3["Features de lag\nj-1, j-7, j-365"]
         T4{"Split temporel"}
-        T5["Train\n2020–2024"]
+        T5["Train\n2022–2024"]
         T6["Holdout\n2025"]
         T7["Capacité = P90 train"]
         T8["Run 1 — XGBoost\nn_est=100, lr=0.10"]
         T9["Run 2 — XGBoost\nn_est=300, lr=0.05"]
         T10["Run 3 — XGBoost\nn_est=500, lr=0.02"]
-        T11["MAE / RMSE / MAPE\nPrécision alertes"]
+        T11["MAE / RMSE / MAE normalisée\nPrécision alertes"]
     end
 
     subgraph MLFLOW["MLflow — SSP Cloud"]
@@ -50,7 +50,7 @@ flowchart TD
 
     subgraph PREDICT["predict.py — Projection J+7"]
         P1["Sélection meilleur run\n(MAE holdout minimale)"]
-        P2["Lags depuis\nhistorique réel"]
+        P2["Lags depuis\nhistorique réel (J-1, J-7, J-365)"]
         P3["Open-Meteo Forecast\nprévisions 7 jours"]
         P4["Calendrier bundlé\njours fériés + vacances Zone A"]
         P5["Construction features\npour J+1 à J+7"]
@@ -137,21 +137,24 @@ Ajout température journalière (API Open-Meteo historique)
       │
       ▼
 Features de lag
-  passages_j1 = passages_jour décalé de 1 jour
-  passages_j7 = passages_jour décalé de 7 jours
+  passages_j1   = passages_jour décalé de 1 jour
+  passages_j7   = passages_jour décalé de 7 jours
+  passages_j365 = passages_jour même date l'an passé (merge par date)
       │
       ▼
-Suppression des 7 premiers jours (lags incomplets)
+Suppression des lignes sans lag complet
 ```
 
 ### Split temporel
 
 | Jeu | Période | Usage |
 |---|---|---|
-| Train | 2020–2024 | Entraînement du modèle (~1 826 jours) |
+| Train | **2022–2024** | Entraînement du modèle (~1 095 jours) |
 | Holdout | 2025 | Évaluation hors-échantillon (~365 jours) |
 
-### Features (11 variables)
+> **Pourquoi exclure 2020–2021 ?** Les années COVID (confinements, couvre-feux, réouvertures par décret) produisent des schémas de fréquentation sans équivalent en régime normal. Les inclure dans le train biaisait la baseline apprise par le modèle. Les données 2020–2021 restent chargées en mémoire pour alimenter le lag J-365 des premières lignes de 2022.
+
+### Features (12 variables)
 
 | Feature | Type | Source |
 |---|---|---|
@@ -166,6 +169,13 @@ Suppression des 7 premiers jours (lags incomplets)
 | `neige_oui_non_jour` | météo | CSV journalier |
 | `passages_j1` | lag | passages J-1 |
 | `passages_j7` | lag | passages J-7 (même jour de semaine) |
+| `passages_j365` | lag | passages même date l'année précédente |
+
+### Transformation de la cible
+
+La cible `passages_jour` est transformée en **log1p** (`ln(y + 1)`) avant l'entraînement XGBoost, et les prédictions sont inversées en **expm1** à la sortie. Cette transformation réduit le poids des pics extrêmes dans la loss XGBoost (journées à 400+ passages sur des sites avec une médiane à 24) sans modifier l'interface externe — les métriques et les prédictions restent exprimées en passages/jour.
+
+Contrôlé par `LOG_TRANSFORM = True` dans `config.py`.
 
 ### Capacité de charge
 
@@ -188,7 +198,7 @@ Tous les runs utilisent `random_state=42`. Les prédictions sont clampées à 0 
 |---|---|
 | `mae_holdout` | Erreur absolue moyenne (passages/jour) — **critère de sélection du meilleur modèle** |
 | `rmse_holdout` | Racine de l'erreur quadratique moyenne |
-| `mape_holdout` | Erreur relative moyenne (%) |
+| `mae_normalisee_holdout` | MAE / médiane du holdout × 100 — comparable entre sites de volumes très différents |
 | `precision_alerte_elevee` | % des jours où le niveau d'alerte élevé est correctement prédit |
 
 ### Suivi MLflow

@@ -33,8 +33,10 @@ Le jeu de données est découpé **chronologiquement** : les années les plus an
 
 | Jeu | Période | Rôle | Taille (Herretang) |
 |---|---|---|---|
-| Train | 2020–2024 | Apprentissage des paramètres XGBoost | ~1 826 jours |
+| Train | **2022–2024** | Apprentissage des paramètres XGBoost | ~1 095 jours |
 | Holdout | 2025 | Évaluation et sélection du meilleur run | ~365 jours |
+
+> **2020–2021 exclus du train** : années COVID atypiques (confinements, réouvertures par décret). Ces données sont conservées dans le CSV pour alimenter le lag J-365 des premières lignes de 2022, mais pas utilisées comme cibles d'entraînement.
 
 ### Pourquoi une découpe temporelle et non aléatoire ?
 
@@ -247,7 +249,9 @@ python3 src/poc_backtest.py --date 2026-05-04 --jours 7 --site col-du-coq
 |---|---|---|---|
 | **MAE** | mean(\|y - ŷ\|) | Erreur moyenne en passages/jour — même unité que la cible | Métrique principale, robuste aux valeurs extrêmes |
 | **RMSE** | sqrt(mean((y - ŷ)²)) | Pénalise plus fortement les grosses erreurs | Sensible aux pics exceptionnels |
-| **MAPE** | mean(\|y - ŷ\| / max(y, 1)) × 100 | Erreur relative en % | Utile pour comparer entre sites de volumes différents |
+| **MAE normalisée** | MAE / médiane(holdout) × 100 | Erreur relative robuste — dénominateur = médiane, pas la valeur réelle | Comparaison fiable entre sites à volumes très différents |
+
+> **Pourquoi remplacer le MAPE ?** Le MAPE (`|y - ŷ| / y`) explose mécaniquement quand `y` est proche de 0, ce qui arrive fréquemment sur les petits sites (étang Serre : médiane 6 passages/j, 48% des jours ≤ 5 passages en holdout). Un écart de 3 passages quand la réalité est 2 donne MAPE = 150% — sans que le modèle soit mauvais. La MAE normalisée utilise la **médiane** comme dénominateur, ce qui lui confère la même interprétabilité relative sans ce défaut.
 
 La **MAE** est la métrique principale de sélection (`mae_holdout` dans MLflow) car elle est interprétable directement : "le modèle se trompe de N passages par jour en moyenne."
 

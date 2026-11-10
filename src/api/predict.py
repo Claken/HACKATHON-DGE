@@ -23,7 +23,7 @@ import requests
 import mlflow
 import mlflow.xgboost
 
-from config import MLFLOW as MLFLOW_CFG, FEATURES, DATA_DIR, CALENDRIER_DIR
+from config import MLFLOW as MLFLOW_CFG, FEATURES, DATA_DIR, CALENDRIER_DIR, LOG_TRANSFORM
 from sites import SITES, DEFAULT_SITE
 
 log = logging.getLogger(__name__)
@@ -176,9 +176,12 @@ def run_prediction(
     df["jour_semaine"]              = df["date"].dt.dayofweek
     df["passages_j1"]               = df["date"].apply(lambda d: lag(d, 1))
     df["passages_j7"]               = df["date"].apply(lambda d: lag(d, 7))
+    df["passages_j365"]             = df["date"].apply(lambda d: lag(d, 365))
 
     X = df[FEATURES].values
-    df["passages_prevus"] = np.clip(model.predict(X), 0, None).round().astype(int)
+    preds_raw = model.predict(X)
+    preds = np.clip(np.expm1(preds_raw) if LOG_TRANSFORM else preds_raw, 0, None)
+    df["passages_prevus"] = preds.round().astype(int)
 
     seuils = site_cfg["seuils_risque"]
     df[["risque", "charge"]] = df["passages_prevus"].apply(
