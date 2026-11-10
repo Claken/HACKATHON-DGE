@@ -128,6 +128,63 @@
   --header-padding: 12px 120px 12px 104px;
   --header-gap:     var(--space-9);   /* 40px */
 
+  /* ─── Surfaces et états interactifs (violet marque) ───────────── */
+
+  --purple-bg-light:    #f2edf7;   /* fond bouton "aujourd'hui" */
+  --purple-bg-hover:    #faf7fd;   /* fond carte au survol */
+  --purple-bg-selected: #f5effa;   /* fond carte sélectionnée */
+  --purple-border:      #8a41c1;   /* bordure sélection */
+  --purple-muted:       #c8b0dc;   /* bordure hover */
+  --purple-shadow:      rgba(121, 11, 208, 0.04);  /* halo sélection */
+
+  /* ─── Surfaces neutres ──────────────────────────────────────────── */
+
+  --bg-body:   #fafafa;
+  --bg-subtle: #eeeeee;   /* métriques, panneaux */
+
+  /* ─── Badges de niveau ─────────────────────────────────────────── */
+
+  --level-low-bg:    #eceeeb;
+  --level-low-text:  #4c6249;
+  --level-mid-bg:    #efede2;
+  --level-mid-text:  #655820;
+  --level-high-bg:   #f4e4e4;
+  --level-high-text: #953f3f;
+
+  /* ─── Aperçu seuils (preview lines ThresholdSettings) ──────────── */
+
+  --preview-low:      #a9baa3;
+  --preview-moderate: #d3bc76;
+  --preview-high:     #c38a8a;
+
+  /* ─── Points de vigilance (dot status) ─────────────────────────── */
+
+  --dot-moderate: #ba8400;
+  --dot-low:      #61785a;
+  --dot-high:     #ac4747;
+
+  /* ─── Alerte API ────────────────────────────────────────────────── */
+
+  --alert-warning-bg:     #fff3cd;
+  --alert-warning-border: #ba9400;
+  --alert-warning-text:   #5a4a00;
+
+  /* ─── Indicateur "observé" ──────────────────────────────────────── */
+
+  --observed-color:  #667460;
+  --observed-dot-bg: #8eaa81;
+
+  /* ─── Calendrier ────────────────────────────────────────────────── */
+
+  --holiday-bg:   #eae4f5;
+  --holiday-text: #6c3c9b;
+  --vacation-bg:  #e5edf2;
+  --vacation-text:#4a6a82;
+
+  /* ─── Horizon note ──────────────────────────────────────────────── */
+
+  --horizon-dot: #b1a4be;
+
   /* ─── Préfixe hérité (compat main.css) ─────────────────────────── */
   /* Les variables ci-dessous maintiennent la compatibilité
      avec les usages existants dans main.css. */

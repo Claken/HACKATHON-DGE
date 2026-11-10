@@ -6,14 +6,21 @@ const high = ref(model.value.high);
 const valid = computed(() =>
   validThresholds(Number(moderate.value), Number(high.value)),
 );
-const scale = ref(100);
+const scale = ref(Math.ceil(model.value.high / 100) * 100);
+watch(() => model.value, (newVal) => {
+  moderate.value = newVal.moderate;
+  high.value = newVal.high;
+  scale.value = Math.max(scale.value, Math.ceil(newVal.high / 100) * 100);
+});
 watch([moderate, high], () => {
   if (!valid.value) return;
   scale.value = Math.max(
     scale.value,
     Math.ceil(Number(high.value) / 100) * 100,
   );
-  model.value = { moderate: Number(moderate.value), high: Number(high.value) };
+  const m = Number(moderate.value), h = Number(high.value);
+  if (m !== model.value.moderate || h !== model.value.high)
+    model.value = { moderate: m, high: h };
 });
 </script>
 <template>
