@@ -59,7 +59,11 @@ const hourGuides = computed(() =>
     return { hour, x: x(hour) };
   }),
 );
-const peakX = x(14.5);
+const peakIndex = computed(() => {
+  const vs = values.value;
+  return vs.indexOf(Math.max(...vs));
+});
+const peakX = computed(() => x(8 + peakIndex.value + 0.5));
 const peakY = computed(() => y(props.peak));
 </script>
 

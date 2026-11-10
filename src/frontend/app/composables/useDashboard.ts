@@ -31,6 +31,7 @@ export function useDashboard() {
   const predictData = ref<PredictResponse | null>(null);
   const historyData = ref<Record<string, number>>({});
   const trainStatus = ref<TrainStatus>("idle");
+  const eventDates = ref<string[]>([]);
 
   const sites = computed(() =>
     apiSites.value.map((s) => ({
@@ -60,13 +61,19 @@ export function useDashboard() {
     }
   }
 
+  function toggleEvent(date: string) {
+    const idx = eventDates.value.indexOf(date);
+    if (idx === -1) eventDates.value = [...eventDates.value, date];
+    else eventDates.value = eventDates.value.filter((d) => d !== date);
+  }
+
   let thresholdsInitialized = false;
   async function loadPredict(id: string) {
     loading.value = true;
     error.value = null;
     predictData.value = null;
     try {
-      predictData.value = await fetchPredict(id);
+      predictData.value = await fetchPredict(id, eventDates.value);
       if (!thresholdsInitialized) {
         thresholds.value = {
           moderate: predictData.value.seuils_abs.modere,
@@ -168,7 +175,9 @@ export function useDashboard() {
             total: dayData.passages_prevus,
             peak: dayData.pic_horaire_estime,
             rain: dayData.precipitations_mm,
+            snow: dayData.neige ?? false,
             reference: dayData.passages_reference,
+            evenement: dayData.evenement ?? false,
           }
         : null;
       const historical =
@@ -189,6 +198,7 @@ export function useDashboard() {
         vacation: vacation?.name,
         today: date === anchor.value,
         past: date < anchor.value,
+        evenement: eventDates.value.includes(date),
       };
     }),
   );
@@ -233,8 +243,12 @@ export function useDashboard() {
   watch([week, siteId], selectFirstAvailable, { flush: "sync" });
   watch(siteId, async (id) => {
     trainStatus.value = "idle";
+    eventDates.value = [];
     await loadPredict(id);
     selectFirstAvailable();
+  });
+  watch(eventDates, async () => {
+    await loadPredict(siteId.value);
   });
   function today() {
     week.value = 0;
@@ -257,5 +271,7 @@ export function useDashboard() {
     today,
     trainStatus,
     trainSite,
+    eventDates,
+    toggleEvent,
   };
 }

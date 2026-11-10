@@ -17,6 +17,7 @@ const {
   today,
   trainStatus,
   trainSite,
+  toggleEvent,
 } = useDashboard();
 const longDate = (date: string) =>
   formatDate(date, {
@@ -84,6 +85,7 @@ const trainLabel = computed(() => {
       :selected="selectedDate"
       :connected="site.available"
       @select="selectedDate = $event"
+      @toggle-event="toggleEvent"
     />
     <p class="horizon-note">
       Prévisions jusqu’au {{ formatDate(offsetDate(anchor, 6)) }} inclus · 7
@@ -113,6 +115,11 @@ const trainLabel = computed(() => {
             {{ selected.forecast.total }} <small>passages</small>
           </div>
           <span class="sub">{{ site.name }} · passages entrants</span>
+        </div>
+        <div v-if="selected.forecast?.evenement" class="metric">
+          <div class="label">Événement</div>
+          <div class="value">⚡ Événement prévu</div>
+          <span class="sub">Pris en compte dans la prévision</span>
         </div>
         <div class="metric weather-metric">
           <div class="label">Météo de la journée</div>
@@ -152,7 +159,7 @@ const trainLabel = computed(() => {
           </div>
           <div class="sub">
             {{ selected.forecast.rain.toLocaleString("fr-FR") }} mm de
-            précipitations · Neige : 0 cm
+            précipitations · Neige : {{ selected.forecast.snow ? "oui" : "non" }}
           </div>
         </div>
       </section>

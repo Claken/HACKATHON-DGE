@@ -12,9 +12,12 @@ export interface DayForecast {
   pic_horaire_estime: number;
   passages_reference: number;
   precipitations_mm: number;
+  neige: boolean;
   risque: string;
   jour_ferie: boolean;
   vacances: boolean;
+  evenement: boolean;
+  nb_evenements: number;
 }
 
 export interface PredictResponse {
@@ -69,8 +72,10 @@ export function useApi() {
     return $fetch<SiteInfo[]>(`${base}/sites`);
   }
 
-  async function fetchPredict(siteId: string): Promise<PredictResponse> {
-    return $fetch<PredictResponse>(`${base}/predict/${siteId}`);
+  async function fetchPredict(siteId: string, eventDates: string[] = []): Promise<PredictResponse> {
+    return $fetch<PredictResponse>(`${base}/predict/${siteId}`, {
+      params: eventDates.length ? { event_dates: eventDates } : undefined,
+    });
   }
 
   async function fetchHistory(siteId: string, from: string, to: string): Promise<HistoryEntry[]> {
