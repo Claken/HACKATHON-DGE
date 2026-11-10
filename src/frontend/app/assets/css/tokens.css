@@ -87,27 +87,115 @@
 
   /* ─── Typographie ───────────────────────────────────────────────── */
 
-  --font-main: 'Marianne', system-ui, sans-serif;
-  --font-data: 'Roboto', monospace;
+  /* Familles */
+  --font-main:   'Marianne', system-ui, sans-serif;   /* UI / DSFR */
+  --font-data:   'Roboto', monospace;                 /* axes graphiques */
+  --font-serif:  Georgia, serif;                      /* devise (Liberté…) */
 
-  /* Tailles */
-  --text-2xs: 12px;   /* légende graphique */
-  --text-xs:  13px;   /* Carto BET / texte courant, number */
-  --text-sm:  14px;   /* corps SM */
-  --text-md:  20px;   /* H6 / titre site */
-  --text-lg:  24px;   /* H5 / titre section */
+  /* ── Échelle de tailles ──────────────────────────────────────────
+     Nomenclature : --text-{n}  où n est la taille en px
+     (aligne chaque valeur sur une ligne pour lecture rapide) */
+  --text-8:   8px;    /* marqueur "aujourd'hui", badge compact          */
+  --text-9:   9px;    /* Carto BET inline, today-marker, badge          */
+  --text-10:  10px;   /* weekday, label compact, caption                */
+  --text-11:  11px;   /* notes, légende, footer, eyebrow                */
+  --text-12:  12px;   /* Carto BET/Légende — font-weight 500            */
+  --text-13:  13px;   /* Carto BET/Texte courant & Number               */
+  --text-14:  14px;   /* 2.Corps de texte/SM — corps standard           */
+  --text-16:  16px;   /* champ select principal                         */
+  --text-17:  17px;   /* sous-titre panneaux                            */
+  --text-18:  18px;   /* titre panneau moyen                            */
+  --text-19:  19px;   /* titre section (.section-heading h2)            */
+  --text-20:  20px;   /* 1.Titres/H6 — nom du site                     */
+  --text-21:  21px;   /* input seuil (mobile)                           */
+  --text-22:  22px;   /* h1 mobile                                      */
+  --text-23:  23px;   /* comptage jour                                  */
+  --text-24:  24px;   /* Carto BET/TITLE — titre section principale     */
+  --text-25:  25px;   /* h1 desktop v1                                  */
+  --text-26:  26px;   /* métrique principale large                      */
+  --text-27:  27px;   /* .value desktop                                 */
+  --text-28:  28px;   /* h1 v2                                          */
+  --text-30:  30px;   /* .value v3 compact                              */
+  --text-32:  32px;   /* .value v2                                      */
 
-  /* Hauteurs de ligne */
-  --leading-2xs: 17px;
-  --leading-xs:  18px;
-  --leading-sm:  24px;
-  --leading-md:  28px;
-  --leading-lg:  33px;
+  /* ── Hauteurs de ligne ───────────────────────────────────────────
+     Nomenclature : --leading-{approx}
+     Source Figma → line-height des styles nommés              */
+  --leading-11:  11px;   /* badge compact */
+  --leading-14:  14px;   /* today-marker */
+  --leading-15:  15px;   /* Roboto axes graphiques (letter-spacing 0.5px) */
+  --leading-17:  17px;   /* Carto BET/Légende */
+  --leading-18:  18px;   /* Carto BET/Texte courant, Number */
+  --leading-24:  24px;   /* 2.Corps de texte/SM */
+  --leading-28:  28px;   /* 1.Titres/H6 */
+  --leading-33:  33px;   /* Carto BET/TITLE / H5 */
 
-  /* Graisses */
-  --weight-regular: 400;
-  --weight-medium:  500;
-  --weight-bold:    700;
+  /* Rapports (unitless — pour body/paragraphes) */
+  --leading-tight:  1.1;
+  --leading-normal: 1.3;
+  --leading-relaxed: 1.5;
+  --leading-loose:   1.7;
+
+  /* ── Graisses ────────────────────────────────────────────────────*/
+  --weight-regular:    400;
+  --weight-medium:     500;
+  --weight-semibold:   600;
+  --weight-bold:       700;
+  --weight-extrabold:  800;
+
+  /* ── Espacement entre lettres ────────────────────────────────────*/
+  --tracking-tight:   -0.5px;   /* grandes valeurs numériques */
+  --tracking-normal:   0;
+  --tracking-wide:     0.1px;   /* week-caption */
+  --tracking-wider:    0.5px;   /* Roboto axes graphiques */
+  --tracking-widest:   1.5px;   /* eyebrow uppercase */
+
+  /* ── Styles texte nommés (DSFR + Carto BET) ─────────────────────
+     Usage : composez font-size + font-weight + line-height
+     en référençant les trois variables correspondantes.
+
+     Style                         size        weight         leading
+     ─────────────────────────────────────────────────────────────── */
+  /* 1.Titres/H6 · XXS · Desktop — nom du site / service */
+  --ts-h6-size:     var(--text-20);
+  --ts-h6-weight:   var(--weight-bold);
+  --ts-h6-leading:  var(--leading-28);
+
+  /* Carto BET/TITLE — titre de section carte */
+  --ts-bet-title-size:     var(--text-24);
+  --ts-bet-title-weight:   var(--weight-bold);
+  --ts-bet-title-leading:  var(--leading-33);
+
+  /* 2.Corps de texte/SM · Regular — précisions organisation */
+  --ts-body-sm-size:     var(--text-14);
+  --ts-body-sm-weight:   var(--weight-regular);
+  --ts-body-sm-leading:  var(--leading-24);
+
+  /* 2.Corps de texte/SM · Medium — libellés boutons */
+  --ts-body-sm-med-size:     var(--text-14);
+  --ts-body-sm-med-weight:   var(--weight-medium);
+  --ts-body-sm-med-leading:  var(--leading-24);
+
+  /* Carto BET/Texte courant — labels carte */
+  --ts-bet-body-size:     var(--text-13);
+  --ts-bet-body-weight:   var(--weight-regular);
+  --ts-bet-body-leading:  var(--leading-18);
+
+  /* Carto BET/Number — valeurs numériques carte */
+  --ts-bet-number-size:     var(--text-13);
+  --ts-bet-number-weight:   var(--weight-medium);
+  --ts-bet-number-leading:  var(--leading-18);
+
+  /* Carto BET/Légende — légendes carte */
+  --ts-bet-legend-size:     var(--text-12);
+  --ts-bet-legend-weight:   var(--weight-medium);
+  --ts-bet-legend-leading:  var(--leading-17);
+
+  /* Axes graphiques (Roboto) */
+  --ts-chart-label-size:     var(--text-13);
+  --ts-chart-label-weight:   var(--weight-regular);
+  --ts-chart-label-leading:  var(--leading-15);
+  --ts-chart-label-tracking: var(--tracking-wider);
 
   /* ─── Espacements ───────────────────────────────────────────────── */
 
