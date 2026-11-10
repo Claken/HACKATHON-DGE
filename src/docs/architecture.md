@@ -128,6 +128,6 @@ docker compose up --build
 │   ├── data/               # CSV de fréquentation et météo (montés en lecture seule)
 │   │   └── herretang_2023_2025/
 │   └── docs/               # Documentation
-├── docker-compose.yml
-└── .env.example
+│   └── docker-compose.yml
+├── .env.example
 ```

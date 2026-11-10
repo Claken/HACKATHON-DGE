@@ -1,10 +1,10 @@
 services:
   api:
-    build: ./src/api
+    build: ./api
     ports:
       - "8000:8000"
     volumes:
-      - ./src/data:/app/data:ro
+      - ./data:/app/data:ro
       - mlflow_data:/app/mlflow
     environment:
       - MLFLOW_TRACKING_URI=sqlite:////app/mlflow/mlflow.db
@@ -14,7 +14,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ./src/frontend
+    build: ./frontend
     ports:
       - "3000:3000"
     environment:
