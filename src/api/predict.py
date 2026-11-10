@@ -148,7 +148,6 @@ def run_prediction(
     historique: pd.Series = None,
     feries: set = None,
     vacances_periodes: list = None,
-    evenements: dict[str, int] | None = None,
 ) -> dict:
     """
     Orchestre la prédiction J+7 et retourne un dict JSON-sérialisable.
@@ -185,10 +184,7 @@ def run_prediction(
     df["passages_j1"]               = df["date"].apply(lambda d: lag(d, 1))
     df["passages_j7"]               = df["date"].apply(lambda d: lag(d, 7))
     df["passages_j365"]             = df["date"].apply(lambda d: lag(d, 365))
-    evt = evenements or {}
-    df["nb_evenements_references_j"] = df["date"].dt.strftime("%Y-%m-%d").map(
-        lambda d: evt.get(d, 0)
-    ).astype(int)
+    df["nb_evenements_references_j"] = 0
 
     X = df[FEATURES].values
     preds_raw = model.predict(X)
@@ -230,8 +226,6 @@ def run_prediction(
                 "weekend":            bool(row["weekend"]),
                 "jour_ferie":         bool(row["jour_ferie"]),
                 "vacances":           bool(row["vacances_scolaires_zone_a"]),
-                "evenement":          int(row["nb_evenements_references_j"]) > 0,
-                "nb_evenements":      int(row["nb_evenements_references_j"]),
             }
             for _, row in df.iterrows()
         ],

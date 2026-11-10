@@ -7,7 +7,7 @@ body {
   color: var(--ink);
   background: var(--color-white);
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.5;
 }
 button,
@@ -50,7 +50,7 @@ header {
 .republic {
   width: 100px;
   flex-shrink: 0;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   line-height: 1.1;
   letter-spacing: 0.1px;
@@ -89,7 +89,7 @@ header {
   flex: 1;
 }
 .brand strong {
-  font-size: 21px;
+  font-size: 23px;
 }
 .brand div {
   color: var(--muted);
@@ -98,7 +98,7 @@ header {
 .nav {
   display: flex;
   gap: 24px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .nav a {
   text-decoration: none;
@@ -113,7 +113,7 @@ header {
   padding: 30px;
 }
 .eyebrow {
-  font-size: 11px;
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: #bcb9c6;
@@ -121,13 +121,13 @@ header {
 }
 h1 {
   margin: 0;
-  font-size: 25px;
+  font-size: 27px;
   font-weight: 600;
 }
 .hero p {
   margin: 7px 0 0;
   color: #c5c3cc;
-  font-size: 13px;
+  font-size: 15px;
 }
 main {
   max-width: 1120px;
@@ -135,7 +135,7 @@ main {
   padding: 22px 30px 50px;
 }
 .demo {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
   padding: 0 2px 16px;
   display: flex;
@@ -147,7 +147,7 @@ main {
   border-radius: 4px;
   padding: 1px 6px;
   color: var(--grey-1000);
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0.5px;
   white-space: nowrap;
 }
@@ -160,7 +160,7 @@ main {
   padding: 9px 22px;
 }
 .context strong {
-  font-size: 18px;
+  font-size: 20px;
 }
 .context .separator {
   height: 22px;
@@ -174,7 +174,7 @@ main {
 }
 .context .access {
   margin-left: auto;
-  font-size: 12px;
+  font-size: 14px;
 }
 .summary-grid {
   display: grid;
@@ -191,28 +191,28 @@ main {
   background: var(--grey-100);
 }
 .label {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
 }
 .value {
-  font-size: 27px;
+  font-size: 29px;
   font-weight: 650;
   line-height: 1.3;
   margin: 5px 0;
 }
 .value small {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 400;
 }
 .sub {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
 }
 .status {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
 }
 .dot {
@@ -239,7 +239,7 @@ main {
 }
 .panel h2,
 .chart-card h2 {
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 500;
   margin: 0 0 16px;
 }
@@ -248,7 +248,7 @@ main {
   background: var(--color-black);
   color: var(--color-white);
   border-radius: 25px;
-  font-size: 12px;
+  font-size: 14px;
   padding: 7px 15px;
   margin-bottom: 12px;
   font-weight: 400;
@@ -258,7 +258,7 @@ main {
   grid-template-columns: 1fr auto;
   gap: 5px 15px;
   margin: 0 0 19px;
-  font-size: 13px;
+  font-size: 15px;
 }
 .facts dt {
   color: var(--muted);
@@ -281,11 +281,11 @@ main {
   background: var(--color-white);
 }
 .chart-card h2 {
-  font-size: 14px;
+  font-size: 16px;
   margin-bottom: 4px;
 }
 .chart-caption {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
 }
 #dailyChart {
@@ -298,7 +298,7 @@ main {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   margin: 0 0 12px;
 }
@@ -322,7 +322,7 @@ main {
   justify-content: center;
   align-items: center;
   gap: 20px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
   margin-top: 14px;
 }
@@ -330,7 +330,7 @@ main {
   border: 0;
   background: transparent;
   padding: 5px 12px;
-  font-size: 19px;
+  font-size: 21px;
 }
 .arrow:disabled {
   opacity: 0.3;
@@ -349,15 +349,15 @@ main {
 }
 .context-tile strong {
   display: block;
-  font-size: 14px;
+  font-size: 16px;
   margin-top: 5px;
 }
 .context-tile span {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
 }
 .note {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   margin: 9px 0 0;
 }
@@ -371,33 +371,33 @@ main {
   border-top: 1px solid var(--grey-400);
   display: flex;
   gap: 10px;
-  font-size: 13px;
+  font-size: 15px;
 }
 .actions li:first-child {
   border-top: 0;
   padding-top: 0;
 }
 .action-index {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--grey-800);
   padding-top: 2px;
 }
 .actions strong {
   display: block;
-  font-size: 13px;
+  font-size: 15px;
   margin-bottom: 2px;
 }
 .actions p {
   margin: 0;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
 }
 details.panel {
   padding: 0;
 }
 details.panel summary {
   padding: 15px 20px;
-  font-size: 14px;
+  font-size: 16px;
   list-style: none;
   display: flex;
   align-items: center;
@@ -405,7 +405,7 @@ details.panel summary {
 }
 details.panel summary::after {
   content: "▾";
-  font-size: 15px;
+  font-size: 17px;
 }
 details[open].panel summary::after {
   content: "▴";
@@ -421,7 +421,7 @@ details.panel .inside {
   margin: 10px 0;
 }
 .setting label {
-  font-size: 12px;
+  font-size: 14px;
 }
 .setting input {
   width: 85px;
@@ -437,7 +437,7 @@ details.panel .inside {
   color: var(--color-white);
   border-radius: 20px;
   padding: 8px 16px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .button.secondary {
   color: var(--grey-1000);
@@ -455,12 +455,12 @@ details.panel .inside {
   margin-bottom: 10px;
 }
 .section-heading h2 {
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 500;
   margin: 0;
 }
 .section-heading span {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
 }
 .table-wrap {
@@ -473,13 +473,13 @@ table {
   border-collapse: collapse;
   text-align: left;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 14px;
 }
 th {
   font-weight: 500;
   color: var(--muted);
   background: var(--grey-100);
-  font-size: 11px;
+  font-size: 13px;
 }
 th,
 td {
@@ -510,7 +510,7 @@ td button {
   border-radius: 15px;
   background: var(--level-mid-bg);
   color: var(--level-mid-text);
-  font-size: 11px;
+  font-size: 13px;
 }
 .badge.low {
   background: var(--level-low-bg);
@@ -527,16 +527,16 @@ td button {
 }
 .trust summary {
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
 }
 .trust p {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
   max-width: 850px;
 }
 .footer-line {
   margin-top: 18px;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--grey-800);
   display: flex;
   justify-content: space-between;
@@ -552,7 +552,7 @@ td button {
   color: var(--color-white);
   padding: 12px 20px;
   border-radius: 12px;
-  font-size: 13px;
+  font-size: 15px;
   box-shadow: 0 5px 30px #0003;
   z-index: 10;
 }
@@ -580,16 +580,16 @@ td button {
     display: none;
   }
   .brand strong {
-    font-size: 17px;
+    font-size: 19px;
   }
   .brand div {
-    font-size: 11px;
+    font-size: 13px;
   }
   .hero-inner {
     padding: 24px 20px;
   }
   h1 {
-    font-size: 22px;
+    font-size: 24px;
   }
   main {
     padding: 20px;
@@ -612,7 +612,7 @@ td button {
     padding: 12px 16px;
   }
   .value {
-    font-size: 24px;
+    font-size: 26px;
   }
   .layout {
     grid-template-columns: 1fr;
@@ -629,14 +629,14 @@ td button {
   }
   .demo {
     align-items: flex-start;
-    font-size: 11px;
+    font-size: 13px;
   }
 }
 
 /* V2 — hierarchy and generous spacing */
 body {
   background: var(--bg-body);
-  font-size: 15px;
+  font-size: 17px;
 }
 header {
   background: var(--color-white);
@@ -647,19 +647,18 @@ header {
   max-width: 1180px;
 }
 .site-mark,
-.nav,
 .motto {
   display: none;
 }
 .republic {
-  font-size: 9px;
+  font-size: 11px;
   width: 78px;
 }
 .brand strong {
-  font-size: 19px;
+  font-size: 21px;
 }
 .brand div {
-  font-size: 12px;
+  font-size: 14px;
 }
 .hero {
   background: var(--color-black);
@@ -672,10 +671,10 @@ header {
   display: none;
 }
 h1 {
-  font-size: 28px;
+  font-size: 30px;
 }
 .hero p {
-  font-size: 14px;
+  font-size: 16px;
   margin-top: 8px;
 }
 main {
@@ -683,7 +682,7 @@ main {
   padding: 24px 36px 48px;
 }
 .demo {
-  font-size: 11px;
+  font-size: 13px;
   padding-bottom: 20px;
 }
 .context {
@@ -693,7 +692,7 @@ main {
   gap: 14px;
 }
 .context strong {
-  font-size: 20px;
+  font-size: 22px;
 }
 .context .separator,
 .context > label,
@@ -726,18 +725,18 @@ main {
   border-left: 1px solid var(--border-card);
 }
 .label {
-  font-size: 12px;
+  font-size: 14px;
 }
 .value {
-  font-size: 32px;
+  font-size: 34px;
   margin: 8px 0;
 }
 .value small {
-  font-size: 12px;
+  font-size: 14px;
 }
 .sub,
 .status {
-  font-size: 12px;
+  font-size: 14px;
 }
 .layout {
   display: flex;
@@ -762,11 +761,11 @@ main {
   border-color: var(--border-default);
 }
 .chart-card h2 {
-  font-size: 19px;
+  font-size: 21px;
   margin-bottom: 5px;
 }
 .chart-caption {
-  font-size: 12px;
+  font-size: 14px;
 }
 #dailyChart {
   max-height: 340px;
@@ -800,7 +799,7 @@ main {
   gap: 0 30px;
 }
 .left > .panel:nth-child(3) h2 {
-  font-size: 17px;
+  font-size: 19px;
   margin: 0;
 }
 .left > .panel:nth-child(3) > .pill,
@@ -818,12 +817,12 @@ main {
   display: none;
 }
 .actions strong {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   margin-bottom: 5px;
 }
 .actions p {
-  font-size: 12px;
+  font-size: 14px;
 }
 .right > details {
   background: transparent;
@@ -832,7 +831,7 @@ main {
 }
 .right > details summary {
   padding: 14px 2px;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
 }
 .right > details .inside {
@@ -851,10 +850,10 @@ main {
   margin-bottom: 16px;
 }
 .section-heading h2 {
-  font-size: 19px;
+  font-size: 21px;
 }
 .section-heading span {
-  font-size: 11px;
+  font-size: 13px;
 }
 .table-wrap {
   border: 0;
@@ -899,13 +898,13 @@ td {
   white-space: normal;
 }
 td:first-child button {
-  font-size: 11px;
+  font-size: 13px;
   text-align: center;
   width: 100%;
   padding: 4px 0 9px;
 }
 td:nth-child(2) {
-  font-size: 23px;
+  font-size: 25px;
   font-weight: 600;
   margin: 0 0 10px;
 }
@@ -913,7 +912,7 @@ td:nth-child(2)::after {
   content: "passages";
   display: block;
   font-weight: 400;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--grey-800);
 }
 td:nth-child(3),
@@ -921,7 +920,7 @@ td:nth-child(5) {
   display: none;
 }
 .badge {
-  font-size: 10px;
+  font-size: 12px;
 }
 .trust {
   margin-top: 26px;
@@ -930,18 +929,18 @@ td:nth-child(5) {
   color: var(--muted);
 }
 .footer-line {
-  font-size: 10px;
+  font-size: 12px;
 }
 .v2-intro {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 14px;
   margin: -4px 0 18px;
 }
 .v2-detail {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 20px;
-  font-size: 12px;
+  font-size: 14px;
 }
 .v2-detail .facts {
   margin-bottom: 0;
@@ -951,11 +950,11 @@ td:nth-child(5) {
   color: var(--muted);
 }
 .v2-detail-title {
-  font-size: 13px;
+  font-size: 15px;
   margin: 0 0 12px;
 }
 .v2-details-note {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   margin: 12px 0 0;
 }
@@ -964,13 +963,13 @@ td:nth-child(5) {
     padding: 18px 20px;
   }
   .brand strong {
-    font-size: 16px;
+    font-size: 18px;
   }
   .hero-inner {
     padding: 26px 20px;
   }
   h1 {
-    font-size: 23px;
+    font-size: 25px;
   }
   main {
     padding: 20px;
@@ -979,7 +978,7 @@ td:nth-child(5) {
     align-items: flex-start;
   }
   .context strong {
-    font-size: 17px;
+    font-size: 19px;
   }
   .context select {
     margin-left: 0;
@@ -998,7 +997,7 @@ td:nth-child(5) {
     border-top: 1px solid var(--border-card);
   }
   .value {
-    font-size: 27px;
+    font-size: 29px;
   }
   .chart-card {
     padding: 20px 12px;
@@ -1009,7 +1008,7 @@ td:nth-child(5) {
   }
   .legend {
     gap: 10px;
-    font-size: 9px;
+    font-size: 11px;
   }
   .left > .panel:nth-child(3) {
     grid-template-columns: 1fr;
@@ -1024,7 +1023,7 @@ td:nth-child(5) {
     padding: 12px 5px;
   }
   td:nth-child(2) {
-    font-size: 21px;
+    font-size: 23px;
   }
   .section-heading span {
     display: block;
@@ -1037,7 +1036,7 @@ td:nth-child(5) {
     width: 65px;
   }
   .brand div {
-    font-size: 10px;
+    font-size: 12px;
   }
 }
 
@@ -1057,7 +1056,7 @@ td:nth-child(5) {
   margin: 8px 0;
 }
 .weather-main .value {
-  font-size: 25px;
+  font-size: 27px;
   margin: 0;
 }
 .weather-main svg {
@@ -1069,7 +1068,7 @@ td:nth-child(5) {
 }
 @media (max-width: 760px) {
   .weather-main .value {
-    font-size: 24px;
+    font-size: 26px;
   }
   .week-section {
     margin-bottom: 22px;
@@ -1082,11 +1081,11 @@ td:nth-child(5) {
   background: var(--bg-subtle);
 }
 .threshold-panel h2 {
-  font-size: 18px;
+  font-size: 20px;
   margin-bottom: 7px;
 }
 .threshold-description {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
   margin: 0 0 20px;
 }
@@ -1104,7 +1103,7 @@ td:nth-child(5) {
   margin-top: 8px;
 }
 .threshold-legend {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--grey-900);
   margin: 16px 0 0;
   line-height: 1.7;
@@ -1139,12 +1138,12 @@ td:nth-child(5) {
   box-shadow: var(--shadow-card);
   padding: 24px;
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-muted);
 }
 
 .chart-empty-title {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   color: var(--text-body);
 }
@@ -1165,7 +1164,7 @@ td:nth-child(5) {
   gap: 12px;
 }
 .week-controls label {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
 }
 .context .week-controls select {
@@ -1173,7 +1172,7 @@ td:nth-child(5) {
   margin: 0;
 }
 .horizon-note {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--muted);
   margin: -10px 0 22px;
 }
@@ -1184,12 +1183,12 @@ td:nth-child(5) {
   margin: 10px 0 28px;
 }
 .history-empty h2 {
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 500;
   margin: 0 0 8px;
 }
 .history-empty p {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--muted);
   margin-bottom: 20px;
 }
@@ -1202,7 +1201,7 @@ tbody .history-day:hover {
 }
 .history-day td:first-child {
   padding: 4px 0 12px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
 }
 .history-day td:nth-child(2)::after {
@@ -1233,7 +1232,7 @@ tbody .history-day:hover {
   border: 1px solid var(--border-default);
   background: var(--color-white);
   border-radius: 12px;
-  font-size: 25px;
+  font-size: 27px;
   line-height: 1;
 }
 .week-arrow:hover:not(:disabled) {
@@ -1251,10 +1250,10 @@ tbody .history-day:hover {
 .week-caption span {
   display: block;
   color: var(--grey-700);
-  font-size: 10px;
+  font-size: 12px;
 }
 .week-caption strong {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
 }
 .today-button {
@@ -1263,7 +1262,7 @@ tbody .history-day:hover {
   color: #663b85;
   padding: 10px 13px;
   border-radius: 10px;
-  font-size: 11px;
+  font-size: 13px;
   margin-left: 6px;
 }
 td:first-child button {
@@ -1272,12 +1271,12 @@ td:first-child button {
 .day-weekday {
   display: block;
   text-transform: capitalize;
-  font-size: 11px;
+  font-size: 13px;
   color: var(--grey-800);
 }
 .day-number {
   display: block;
-  font-size: 24px;
+  font-size: 26px;
   line-height: 1.5;
 }
 .today-marker {
@@ -1285,7 +1284,7 @@ td:first-child button {
   min-height: 16px;
   color: var(--purple);
   font-weight: 400;
-  font-size: 9px;
+  font-size: 11px;
 }
 .calendar-labels {
   display: flex;
@@ -1296,7 +1295,7 @@ td:first-child button {
   margin-top: 10px !important;
 }
 .calendar-badge {
-  font-size: 9px;
+  font-size: 11px;
   line-height: 1.4;
   padding: 3px 6px;
   border-radius: 5px;
@@ -1322,7 +1321,7 @@ td:first-child button {
   cursor: default;
 }
 .unavailable-label {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--grey-700);
 }
 .unavailable-day td:nth-child(2)::after {
@@ -1340,7 +1339,7 @@ td:first-child button {
   align-items: flex-start;
 }
 .unit-tag {
-  font-size: 10px;
+  font-size: 12px;
   background: var(--border-default);
   padding: 6px 10px;
   border-radius: 7px;
@@ -1362,7 +1361,7 @@ td:first-child button {
   display: flex;
   gap: 8px;
   align-items: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
 }
 .red-dot {
@@ -1375,7 +1374,7 @@ td:first-child button {
   margin: 16px 0;
 }
 .threshold-input span {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--grey-700);
   white-space: nowrap;
 }
@@ -1388,7 +1387,7 @@ td:first-child button {
   padding: 7px 9px;
   text-align: center;
   font-weight: 600;
-  font-size: 23px;
+  font-size: 25px;
 }
 .threshold-editor input[type="range"] {
   width: 100%;
@@ -1425,11 +1424,11 @@ td:first-child button {
   background: var(--preview-high);
 }
 .threshold-preview strong {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
 }
 .threshold-preview span {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--grey-700);
 }
 .threshold-bottom {
@@ -1484,10 +1483,10 @@ td:first-child button {
     gap: 14px;
   }
   .calendar-badge {
-    font-size: 8px;
+    font-size: 10px;
   }
   .day-number {
-    font-size: 22px;
+    font-size: 24px;
   }
 }
 
@@ -1508,7 +1507,7 @@ td:first-child button {
   align-items: center;
 }
 .context strong {
-  font-size: 22px;
+  font-size: 24px;
   letter-spacing: -0.5px;
 }
 .week-controls {
@@ -1524,29 +1523,29 @@ td:first-child button {
   border-radius: 10px;
   height: 35px;
   width: 35px;
-  font-size: 22px;
+  font-size: 24px;
 }
 .week-caption {
   min-width: 190px;
   padding: 0 6px;
 }
 .week-caption span {
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.1px;
 }
 .week-caption strong {
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0;
 }
 .today-button {
   margin: 0 0 0 5px;
   border-radius: 9px;
   background: var(--purple-bg-light);
-  font-size: 10px;
+  font-size: 12px;
   padding: 10px 12px;
 }
 .week-section .section-heading h2 {
-  font-size: 18px;
+  font-size: 20px;
   letter-spacing: -0.3px;
 }
 .week-section {
@@ -1594,36 +1593,36 @@ td:first-child button {
   padding: 0 0 14px;
 }
 .day-weekday {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 400;
 }
 .day-number {
-  font-size: 23px;
+  font-size: 25px;
   font-weight: 600;
   line-height: 1.4;
 }
 .today-marker {
   width: 100%;
-  font-size: 9px;
+  font-size: 11px;
   min-height: 14px;
   line-height: 14px;
   margin-top: 2px;
 }
 td:nth-child(2) {
-  font-size: 26px;
+  font-size: 28px;
   line-height: 1.2;
   font-weight: 600;
   letter-spacing: -0.7px;
   margin: 0 0 13px;
 }
 td:nth-child(2)::after {
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0;
   margin-top: 4px;
 }
 .badge {
   padding: 4px 9px;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.3;
   border-radius: 7px;
   font-weight: 400;
@@ -1636,7 +1635,7 @@ td:nth-child(2)::after {
 .calendar-badge {
   border-radius: 5px;
   padding: 2px 5px;
-  font-size: 8px;
+  font-size: 10px;
 }
 .unavailable-day {
   background: var(--grey-100) !important;
@@ -1653,11 +1652,11 @@ td:nth-child(2)::after {
   content: "Historique";
 }
 .unavailable-label {
-  font-size: 9px;
+  font-size: 11px;
 }
 .horizon-note {
   margin: 0 0 27px;
-  font-size: 10px;
+  font-size: 12px;
   color: var(--grey-700);
   display: flex;
   align-items: center;
@@ -1679,13 +1678,13 @@ td:nth-child(2)::after {
   margin-bottom: 13px;
 }
 .selected-day-heading > span {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--grey-700);
 }
 .selected-day-heading > strong {
   text-transform: capitalize;
   font-weight: 500;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--grey-900);
 }
 .summary-grid {
@@ -1704,16 +1703,16 @@ td:nth-child(2)::after {
   padding: 21px 23px;
 }
 .metric .value {
-  font-size: 30px;
+  font-size: 32px;
   letter-spacing: -0.5px;
   margin: 8px 0 11px;
 }
 .metric .label {
-  font-size: 11px;
+  font-size: 13px;
 }
 .metric .sub,
 .metric .status {
-  font-size: 11px;
+  font-size: 13px;
 }
 .metric .status {
   font-weight: 400;
@@ -1722,7 +1721,7 @@ td:nth-child(2)::after {
   gap: 10px;
 }
 .weather-main .value {
-  font-size: 26px;
+  font-size: 28px;
   margin: 0;
 }
 .weather-main svg {
@@ -1730,14 +1729,14 @@ td:nth-child(2)::after {
   height: 30px;
 }
 .weather-metric .sub {
-  font-size: 10px;
+  font-size: 12px;
 }
 .auto-apply {
   display: flex;
   align-items: center;
   gap: 6px;
   color: var(--observed-color);
-  font-size: 11px;
+  font-size: 13px;
   white-space: nowrap;
 }
 .auto-apply i {
@@ -1759,7 +1758,7 @@ td:nth-child(2)::after {
     gap: 16px;
   }
   .context strong {
-    font-size: 20px;
+    font-size: 22px;
   }
   .week-controls {
     flex-wrap: nowrap;
@@ -1773,15 +1772,15 @@ td:nth-child(2)::after {
     padding: 0 3px;
   }
   .week-caption strong {
-    font-size: 11px;
+    font-size: 13px;
   }
   .week-caption span {
-    font-size: 8px;
+    font-size: 10px;
   }
   .today-button {
     width: auto;
     margin: 0;
-    font-size: 9px;
+    font-size: 11px;
     padding: 10px 8px;
   }
   .week-arrow {
@@ -1817,12 +1816,12 @@ td:nth-child(2)::after {
     gap: 3px;
   }
   .horizon-note {
-    font-size: 9px;
+    font-size: 11px;
     margin-bottom: 23px;
   }
   .auto-apply {
     white-space: normal;
-    font-size: 10px;
+    font-size: 12px;
   }
   .threshold-bottom {
     align-items: flex-start;
@@ -1837,7 +1836,7 @@ td:nth-child(2)::after {
   margin-bottom: 10px;
 }
 .week-section .section-heading h2 {
-  font-size: 16px;
+  font-size: 18px;
 }
 .week-section {
   margin-bottom: 12px;
@@ -1854,37 +1853,37 @@ td:nth-child(2)::after {
   gap: 0 5px;
 }
 .day-number {
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1.2;
 }
 .day-weekday {
-  font-size: 10px;
+  font-size: 12px;
 }
 .today-marker {
   min-height: 11px;
   line-height: 11px;
-  font-size: 8px;
+  font-size: 10px;
   margin-top: 1px;
 }
 .week-section td:nth-child(2) {
-  font-size: 23px;
+  font-size: 25px;
   margin-bottom: 7px;
   line-height: 1.1;
 }
 .week-section td:nth-child(2)::after {
-  font-size: 9px;
+  font-size: 11px;
   margin-top: 3px;
 }
 .week-section .badge {
   padding: 3px 7px;
-  font-size: 9px;
+  font-size: 11px;
 }
 .calendar-labels {
   min-height: 15px;
   margin-top: 5px !important;
 }
 .calendar-badge {
-  font-size: 8px;
+  font-size: 10px;
   padding: 2px 5px;
 }
 .horizon-note {
@@ -1903,22 +1902,22 @@ td:nth-child(2)::after {
   border-radius: 12px;
 }
 .metric .value {
-  font-size: 26px;
+  font-size: 28px;
   margin: 5px 0 6px;
 }
 .metric .label {
-  font-size: 10px;
+  font-size: 12px;
 }
 .metric .sub,
 .metric .status {
-  font-size: 10px;
+  font-size: 12px;
 }
 .weather-main {
   margin: 5px 0 6px;
   gap: 8px;
 }
 .weather-main .value {
-  font-size: 23px;
+  font-size: 25px;
   margin: 0;
 }
 .weather-main svg {
@@ -1929,7 +1928,7 @@ td:nth-child(2)::after {
   padding: 22px;
 }
 .threshold-heading h2 {
-  font-size: 17px;
+  font-size: 19px;
 }
 .threshold-description {
   margin-bottom: 14px;
@@ -1941,7 +1940,7 @@ td:nth-child(2)::after {
   margin: 11px 0;
 }
 .threshold-input input {
-  font-size: 21px;
+  font-size: 23px;
   padding: 5px 8px;
 }
 .threshold-preview {
@@ -1953,10 +1952,10 @@ td:nth-child(2)::after {
 }
 .threshold-bottom .note {
   max-width: none;
-  font-size: 10px;
+  font-size: 12px;
 }
 .auto-apply {
-  font-size: 10px;
+  font-size: 12px;
 }
 #settingError:empty {
   display: none;
@@ -1967,7 +1966,7 @@ td:nth-child(2)::after {
     padding: 10px 7px 8px;
   }
   .day-number {
-    font-size: 20px;
+    font-size: 22px;
   }
   .context {
     padding-bottom: 16px;
@@ -1993,7 +1992,7 @@ td:nth-child(2)::after {
   min-width: 250px;
 }
 .site-picker label {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--grey-800);
 }
 .context .site-picker select {
@@ -2004,7 +2003,7 @@ td:nth-child(2)::after {
   border: 1px solid var(--border-default);
   border-radius: 10px;
   padding: 9px 34px 9px 12px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -2022,7 +2021,7 @@ td:nth-child(2)::after {
   }
   .context .site-picker select {
     max-width: none;
-    font-size: 14px;
+    font-size: 16px;
   }
 }
 .api-error {
@@ -2030,11 +2029,11 @@ td:nth-child(2)::after {
   border-left: 4px solid var(--alert-warning-border);
   color: var(--alert-warning-text);
   padding: 12px 36px;
-  font-size: 13px;
+  font-size: 15px;
 }
 .loading {
   color: var(--grey-800);
-  font-size: 13px;
+  font-size: 15px;
   padding: 8px 0 16px;
 }
 
@@ -2107,7 +2106,7 @@ td:nth-child(2)::after {
 }
 
 .day-date > span {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 400;
   color: var(--muted);
   text-transform: capitalize;
@@ -2116,13 +2115,13 @@ td:nth-child(2)::after {
 }
 
 .day-date > strong {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
   line-height: 1.2;
 }
 
 .day-total {
-  font-size: 23px;
+  font-size: 25px;
   font-weight: 600;
   line-height: 1.1;
   margin-bottom: 4px;
@@ -2163,35 +2162,10 @@ td:nth-child(2)::after {
     border-radius: 10px;
   }
   .day-date > strong {
-    font-size: 18px;
+    font-size: 20px;
   }
   .day-total {
-    font-size: 20px;
+    font-size: 22px;
   }
 }
 
-.event-toggle {
-  all: unset;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  padding: 2px 6px;
-  border-radius: 10px;
-  border: 1px solid color-mix(in srgb, var(--text) 20%, transparent);
-  color: var(--muted);
-  margin-top: 4px;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-}
-.event-toggle:hover {
-  border-color: color-mix(in srgb, var(--text) 40%, transparent);
-  color: var(--text);
-}
-.event-toggle.active {
-  background: color-mix(in srgb, #f59e0b 15%, transparent);
-  border-color: #f59e0b;
-  color: #92680a;
-}

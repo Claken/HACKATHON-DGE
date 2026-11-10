@@ -251,10 +251,7 @@ def site_metrics(site_id: str):
 
 
 @app.get("/predict/{site_id}")
-def predict(
-    site_id: str,
-    event_dates: list[str] = Query(default=[], description="Dates avec événement (YYYY-MM-DD)"),
-):
+def predict(site_id: str):
     if site_id not in SITES:
         raise HTTPException(status_code=404, detail=f"Site '{site_id}' inconnu.")
 
@@ -262,7 +259,6 @@ def predict(
         raise HTTPException(status_code=503, detail=f"Modèle non disponible pour '{site_id}'.")
 
     model, capacite, historique, feries, vacances_periodes = MODEL_CACHE[site_id]
-    evenements = {d: 1 for d in event_dates} if event_dates else None
     try:
         return run_prediction(
             site_id=site_id,
@@ -272,7 +268,6 @@ def predict(
             historique=historique,
             feries=feries,
             vacances_periodes=vacances_periodes,
-            evenements=evenements,
         )
     except Exception as e:
         raise HTTPException(status_code=503, detail=str(e))
