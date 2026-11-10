@@ -76,7 +76,7 @@ async def lifespan(app: FastAPI):
         )
         for site_id in sites_a_entrainer:
             TRAINING_STATUS[site_id] = "training"
-            asyncio.create_task(_train_and_reload(site_id))
+            await _train_and_reload(site_id)
 
     log.info("API prête. %d site(s) en cache.", len(MODEL_CACHE))
     yield
