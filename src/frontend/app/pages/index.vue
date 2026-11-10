@@ -225,8 +225,11 @@ const trainLabel = computed(() => {
       </p>
       <p>
         Les passages entrants à un accès ne représentent ni des visiteurs
-        uniques, ni une occupation simultanée. Les autres sites et l’historique
-        ne sont pas connectés.
+        uniques, ni une occupation simultanée. Chaque site dispose de son propre
+        modèle entraîné indépendamment — un pic observé sur un site n’influence
+        pas la prédiction des autres. Les sites réagissent néanmoins aux mêmes
+        signaux (météo, vacances, jours fériés), ce qui peut générer des alertes
+        simultanées sur plusieurs sites.
       </p>
       <p>
         Calendriers : jours fériés métropolitains et vacances scolaires
