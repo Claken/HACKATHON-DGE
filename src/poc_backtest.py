@@ -30,7 +30,7 @@ import numpy as np
 import pandas as pd
 import requests
 
-from config import MLFLOW as MLFLOW_CFG, FEATURES
+from config import MLFLOW as MLFLOW_CFG, FEATURES, CALENDRIER_DIR
 from sites import SITES, DEFAULT_SITE
 
 ENS_DIR = Path("/home/wazolab/Downloads/Fréquentation/DONNEES brutes ecocompteurs ENS")
@@ -194,30 +194,18 @@ meteo_global = pd.DataFrame({
 }).set_index("date")
 
 # ─────────────────────────────────────────────
-# 5. CALENDRIER OFFICIEL (une seule requête)
+# 5. CALENDRIER — fichiers bundlés (zone A / Grenoble)
 # ─────────────────────────────────────────────
-print("[Calendrier] Jours fériés et vacances scolaires...")
-feries_resp = requests.get(
-    "https://calendrier.api.gouv.fr/jours-feries/metropole.json", timeout=10
-)
-feries_resp.raise_for_status()
-feries = set(feries_resp.json().keys())
-
-vac_resp = requests.get(
-    "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets"
-    "/fr-en-calendrier-scolaire/records"
-    f"?where=location%3D%22{SITE['zone_vacances'].replace(' ', '%20')}%22"
-    "%20AND%20(population%3D%22-%22%20OR%20population%3D%22%C3%89l%C3%A8ves%22)"
-    "&limit=100",
-    timeout=10,
-)
-vacances_periodes = []
-if vac_resp.ok:
-    for r in vac_resp.json().get("results", []):
-        vacances_periodes.append((
-            pd.to_datetime(r["start_date"]).date(),
-            pd.to_datetime(r["end_date"]).date(),
-        ))
+import json as _json
+print("[Calendrier] Chargement depuis fichiers bundlés...")
+with open(CALENDRIER_DIR / "jours_feries_metropole.json", encoding="utf-8") as _f:
+    feries = set(_json.load(_f).keys())
+with open(CALENDRIER_DIR / "vacances_grenoble.json", encoding="utf-8") as _f:
+    _vac_data = _json.load(_f)
+vacances_periodes = [
+    (pd.to_datetime(r["start_date"]).date(), pd.to_datetime(r["end_date"]).date())
+    for r in _vac_data["results"]
+]
 
 def est_vacances(date):
     d = date.date()
