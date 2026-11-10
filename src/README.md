@@ -19,14 +19,18 @@ pip install -r src/requirements.txt
 
 ```bash
 cp src/.env.example src/.env
-# Éditer src/.env pour renseigner MLFLOW_TRACKING_URI si nécessaire
+# Éditer src/.env pour renseigner MLFLOW_TRACKING_URI
 ```
 
-Sans `.env`, un fichier `src/mlflow.db` est créé localement.
+**Instance MLflow utilisée actuellement** : le projet utilise le serveur MLflow hébergé par le
+[SSP Cloud](https://datalab.sspcloud.fr) (plateforme de la DINUM). L'URL du serveur est à
+renseigner dans `MLFLOW_TRACKING_URI` dans le fichier `.env`.
+
+Sans `.env`, un fichier `src/mlflow.db` est créé localement en fallback.
 
 ## Utilisation
 
-Toutes les commandes s'exécutent **depuis la racine du dépôt**.
+Les commandes ci-dessous s'écrivent depuis la racine du dépôt. Les scripts résolvent eux-mêmes leurs chemins et fonctionnent depuis n'importe quel répertoire.
 
 ### 1. Entraînement
 
@@ -64,6 +68,11 @@ Options :
 ```
 
 ### 3. Interface MLflow
+
+Avec l'instance SSP Cloud, l'interface est accessible directement via l'URL configurée dans
+`MLFLOW_TRACKING_URI` (pas besoin de lancer un serveur local).
+
+En fallback local :
 
 ```bash
 mlflow ui --backend-store-uri sqlite:///src/mlflow.db
