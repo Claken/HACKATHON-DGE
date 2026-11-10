@@ -18,8 +18,8 @@ pip install -r requirements.txt
 ## Configuration
 
 ```bash
-cp .env.example .env
-# Éditer .env pour renseigner MLFLOW_TRACKING_URI si nécessaire
+cp src/.env.example src/.env
+# Éditer src/.env pour renseigner MLFLOW_TRACKING_URI si nécessaire
 ```
 
 Sans `.env`, un fichier `src/mlflow.db` est créé localement.

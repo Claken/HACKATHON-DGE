@@ -4,4 +4,4 @@ mlflow.db
 mlartifacts/
 
 src/outputs/
-.env
+src/.env
