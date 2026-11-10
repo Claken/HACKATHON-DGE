@@ -99,3 +99,7 @@ src/
 
 Voir [`src/data/herretang_2023_2025/README.md`](data/herretang_2023_2025/README.md)
 pour la description des colonnes, des sources et des précautions d'usage.
+
+## Frontend Nuxt
+
+L'interface est dans [`frontend/`](frontend/README.md). Elle se lance via Docker Compose (`docker compose up`) ou indépendamment avec `cd src/frontend && npm ci && npm run dev`. Elle consomme l'API FastAPI (`src/api/`) pour les prévisions, l'historique CSV et le déclenchement d'entraînement.
