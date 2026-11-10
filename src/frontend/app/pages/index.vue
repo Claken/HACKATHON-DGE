@@ -193,7 +193,7 @@ const trainLabel = computed(() => {
         {{
           site.available
             ? "Cette période est passée. Les comptages observés restent à connecter."
-            : `Le site ${site.name} est sélectionné. Ses prévisions restent à connecter.`
+            : "Les prévisions pour ce site restent à connecter."
         }}
       </p>
       <template v-if="!site.available && site.has_data">
