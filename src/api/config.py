@@ -11,10 +11,11 @@ try:
 except ImportError:
     pass
 
-ROOT     = Path(__file__).resolve().parent
+ROOT           = Path(__file__).resolve().parent
 # En Docker, DATA_DIR est injecté via l'env var pour pointer vers le volume monté (/app/data).
 # En local, il remonte à src/data/ par rapport à src/api/.
-DATA_DIR = Path(os.getenv("DATA_DIR", str(ROOT.parent / "data")))
+DATA_DIR       = Path(os.getenv("DATA_DIR", str(ROOT.parent / "data")))
+CALENDRIER_DIR = DATA_DIR / "calendrier"
 
 MLFLOW = {
     "uri":         os.getenv("MLFLOW_TRACKING_URI", f"sqlite:///{ROOT / 'mlflow' / 'mlflow.db'}"),

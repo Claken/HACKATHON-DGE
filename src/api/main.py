@@ -16,10 +16,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from config import MLFLOW as MLFLOW_CFG
+import pandas as pd
+
+from config import MLFLOW as MLFLOW_CFG, DATA_DIR
 from sites import SITES
-from predict import charger_meilleur_modele, fetch_calendrier, run_prediction
-from utils import charger_frequentation
+from predict import charger_meilleur_modele, charger_calendrier_local, run_prediction
 
 log = logging.getLogger(__name__)
 
@@ -31,16 +32,18 @@ MODEL_CACHE: dict = {}
 async def lifespan(app: FastAPI):
     log.info("Chargement des modèles et données statiques...")
     for site_id, cfg in SITES.items():
-        if cfg["frequentation_csv"] is None:
+        if cfg.get("journalier_csv") is None:
             log.info("  %s — pas de données, ignoré", site_id)
             continue
         try:
             model, capacite = charger_meilleur_modele(
                 cfg, MLFLOW_CFG["uri"], MLFLOW_CFG["max_results"]
             )
-            freq       = charger_frequentation(cfg)
-            historique = freq.groupby("date")["passages_entrants"].sum().sort_index()
-            feries, vacances_periodes = fetch_calendrier(cfg.get("zone_vacances", "Grenoble"))
+            df_j = pd.read_csv(DATA_DIR / cfg["journalier_csv"], sep=";", encoding="utf-8-sig")
+            df_j["date"] = pd.to_datetime(df_j["date"])
+            df_j = df_j[df_j["jour_complet"] == 1]
+            historique = df_j.set_index("date")["passages_jour"].sort_index()
+            feries, vacances_periodes = charger_calendrier_local()
             MODEL_CACHE[site_id] = (model, capacite, historique, feries, vacances_periodes)
             log.info("  %s — prêt ✓", site_id)
         except Exception as e:
@@ -80,7 +83,7 @@ def list_sites():
             "id":       site_id,
             "nom":      cfg["nom"],
             "commune":  cfg["commune"],
-            "has_data": cfg["frequentation_csv"] is not None,
+            "has_data": cfg.get("journalier_csv") is not None,
             "ready":    site_id in MODEL_CACHE,
         }
         for site_id, cfg in SITES.items()

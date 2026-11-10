@@ -6,31 +6,7 @@ import logging
 import pandas as pd
 import requests
 
-from config import DATA_DIR
-
 log = logging.getLogger(__name__)
-
-
-def charger_frequentation(site_cfg: dict) -> pd.DataFrame:
-    path = DATA_DIR / site_cfg["frequentation_csv"]
-    df = pd.read_csv(path, sep=";", encoding="utf-8-sig")
-    df = df[df["qualite_frequentation"] == "valide"].copy()
-    df["date"] = pd.to_datetime(df["date"])
-    return df
-
-
-def agreger_journalier(df: pd.DataFrame) -> pd.DataFrame:
-    cal_cols = ["weekend", "jour_ferie", "vacances_scolaires_zone_a"]
-    daily = df.groupby("date").agg(
-        passages_jour      = ("passages_entrants",    "sum"),
-        precipitations_mm  = ("precipitations_mm",    "sum"),
-        pluie_heures       = ("precipitation_oui_non","sum"),
-        neige_oui_non_jour = ("neige_oui_non",        "max"),
-        **{col: (col, "first") for col in cal_cols},
-    ).reset_index()
-    daily["mois"]         = daily["date"].dt.month
-    daily["jour_semaine"] = daily["date"].dt.dayofweek
-    return daily
 
 
 def fetch_temperature_historique(start_date: str, end_date: str, site_cfg: dict) -> pd.DataFrame:

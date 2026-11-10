@@ -26,7 +26,7 @@ from sklearn.metrics import mean_absolute_error, root_mean_squared_error
 
 from config import MLFLOW as MLFLOW_CFG, FEATURES, HYPERPARAMETRES, DATA_DIR
 from sites import SITES, DEFAULT_SITE
-from utils import charger_frequentation, agreger_journalier, fetch_temperature_historique
+from utils import fetch_temperature_historique
 
 log = logging.getLogger(__name__)
 
@@ -39,26 +39,24 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--site",        default=DEFAULT_SITE, choices=list(SITES.keys()))
     p.add_argument("--mlflow-uri",  default=None,
                    help="URI du serveur MLflow (priorité sur MLFLOW_TRACKING_URI)")
-    p.add_argument("--start-date",  default="2023-01-01")
-    p.add_argument("--end-date",    default="2025-12-31")
     p.add_argument("--verbose", "-v", action="store_true")
     return p.parse_args()
 
 
-def run_training(site_cfg: dict, mlflow_uri: str, start_date: str, end_date: str) -> None:
-    if site_cfg["frequentation_csv"] is None:
+def run_training(site_cfg: dict, mlflow_uri: str) -> None:
+    if site_cfg.get("journalier_csv") is None:
         raise ValueError(f"Pas de données disponibles pour le site '{site_cfg['nom']}'.")
 
-    freq  = charger_frequentation(site_cfg)
-    meteo = pd.read_csv(DATA_DIR / site_cfg["meteo_csv"], sep=";", encoding="utf-8-sig")
-    df = freq.merge(
-        meteo[["debut_utc", "precipitations_mm", "precipitation_oui_non", "neige_oui_non"]],
-        on="debut_utc",
-    )
+    # Charger le CSV journalier pré-agrégé, garder uniquement les jours complets
+    daily = pd.read_csv(DATA_DIR / site_cfg["journalier_csv"], sep=";", encoding="utf-8-sig")
+    daily["date"] = pd.to_datetime(daily["date"])
+    daily = daily[daily["jour_complet"] == 1].copy()
 
-    daily = agreger_journalier(df)
-    temp_df = fetch_temperature_historique(start_date, end_date, site_cfg)
-    daily = daily.merge(temp_df, on="date", how="left")
+    # Température historique depuis Open-Meteo Archive (absente des CSV journaliers)
+    data_start = daily["date"].min().strftime("%Y-%m-%d")
+    data_end   = daily["date"].max().strftime("%Y-%m-%d")
+    temp_df    = fetch_temperature_historique(data_start, data_end, site_cfg)
+    daily      = daily.merge(temp_df, on="date", how="left")
 
     daily = daily.sort_values("date").reset_index(drop=True)
     daily["passages_j1"] = daily["passages_jour"].shift(1)
@@ -139,12 +137,7 @@ def main() -> None:
     )
     site_cfg   = SITES[args.site]
     mlflow_uri = args.mlflow_uri or MLFLOW_CFG["uri"]
-    run_training(
-        site_cfg=site_cfg,
-        mlflow_uri=mlflow_uri,
-        start_date=args.start_date,
-        end_date=args.end_date,
-    )
+    run_training(site_cfg=site_cfg, mlflow_uri=mlflow_uri)
 
 
 if __name__ == "__main__":

@@ -3,13 +3,14 @@
 Projection de fréquentation à J+7 avec indice de risque.
 
 Charge le meilleur modèle depuis MLflow, récupère les prévisions météo
-et le calendrier officiel, puis prédit les 7 prochains jours.
+et le calendrier bundlé, puis prédit les 7 prochains jours.
 
 Usage CLI :
     python predict.py --site herretang
     python predict.py --site herretang --mlflow-uri https://mon-serveur-mlflow
 """
 import argparse
+import json
 import logging
 import sys
 from pathlib import Path
@@ -22,9 +23,8 @@ import requests
 import mlflow
 import mlflow.xgboost
 
-from config import MLFLOW as MLFLOW_CFG, FEATURES
+from config import MLFLOW as MLFLOW_CFG, FEATURES, DATA_DIR, CALENDRIER_DIR
 from sites import SITES, DEFAULT_SITE
-from utils import charger_frequentation
 
 log = logging.getLogger(__name__)
 
@@ -64,6 +64,20 @@ def charger_meilleur_modele(site_cfg: dict, mlflow_uri: str, max_results: int):
 
     model = mlflow.xgboost.load_model(f"runs:/{best_run.info.run_id}/model")
     return model, capacite
+
+
+def charger_calendrier_local() -> tuple[set, list]:
+    """Charge jours fériés et vacances scolaires depuis les JSON bundlés (zone A / Grenoble)."""
+    with open(CALENDRIER_DIR / "jours_feries_metropole.json", encoding="utf-8") as f:
+        feries = set(json.load(f).keys())
+
+    with open(CALENDRIER_DIR / "vacances_grenoble.json", encoding="utf-8") as f:
+        data = json.load(f)
+    vacances_periodes = [
+        (pd.to_datetime(r["start_date"]).date(), pd.to_datetime(r["end_date"]).date())
+        for r in data["results"]
+    ]
+    return feries, vacances_periodes
 
 
 def construire_lags(historique: pd.Series):
@@ -107,45 +121,6 @@ def fetch_meteo_prevision(site_cfg: dict) -> pd.DataFrame:
     })
 
 
-def fetch_calendrier(zone_vacances: str = "Grenoble") -> tuple[set, list]:
-    log.info("Récupération du calendrier officiel (jours fériés + vacances)...")
-    feries_resp = requests.get(
-        "https://calendrier.api.gouv.fr/jours-feries/metropole.json", timeout=10
-    )
-    feries_resp.raise_for_status()
-    feries = set(feries_resp.json().keys())
-
-    vacances_periodes: list = []
-    offset, limit = 0, 100
-    while True:
-        resp = requests.get(
-            "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets"
-            "/fr-en-calendrier-scolaire/records"
-            f"?where=location%3D%22{zone_vacances}%22"
-            "%20AND%20(population%3D%22-%22%20OR%20population%3D%22%C3%89l%C3%A8ves%22)"
-            f"&limit={limit}&offset={offset}",
-            timeout=10,
-        )
-        if not resp.ok:
-            log.warning(
-                "Impossible de récupérer les vacances scolaires (HTTP %s) — indicateur mis à 0",
-                resp.status_code,
-            )
-            break
-        data        = resp.json()
-        results     = data.get("results", [])
-        total_count = data.get("total_count", 0)
-        for r in results:
-            start = pd.to_datetime(r["start_date"]).date()
-            end   = pd.to_datetime(r["end_date"]).date()
-            vacances_periodes.append((start, end))
-        offset += limit
-        if offset >= total_count or not results or offset > 10_000:
-            break
-
-    return feries, vacances_periodes
-
-
 def niveau_risque(passages: int, capacite: int, seuils: dict) -> tuple[str, float]:
     ratio = passages / capacite
     if ratio >= seuils["eleve"]:
@@ -170,21 +145,25 @@ def run_prediction(
     """
     Orchestre la prédiction J+7 et retourne un dict JSON-sérialisable.
     - API  : passe model/capacite/historique/feries/vacances (boot cache) → zéro I/O statique.
-    - CLI  : laisse tout à None → charge depuis MLflow + disque + APIs calendrier.
+    - CLI  : laisse tout à None → charge depuis MLflow + disque + calendrier bundlé.
     """
     if model is None:
         model, capacite = charger_meilleur_modele(site_cfg, mlflow_uri, max_results)
 
     if historique is None:
-        freq       = charger_frequentation(site_cfg)
-        historique = freq.groupby("date")["passages_entrants"].sum().sort_index()
+        daily = pd.read_csv(
+            DATA_DIR / site_cfg["journalier_csv"], sep=";", encoding="utf-8-sig"
+        )
+        daily["date"] = pd.to_datetime(daily["date"])
+        daily = daily[daily["jour_complet"] == 1]
+        historique = daily.set_index("date")["passages_jour"].sort_index()
 
     lag = construire_lags(historique)
 
     df = fetch_meteo_prevision(site_cfg)
 
     if feries is None or vacances_periodes is None:
-        feries, vacances_periodes = fetch_calendrier(site_cfg.get("zone_vacances", "Grenoble"))
+        feries, vacances_periodes = charger_calendrier_local()
 
     def est_vacances(date: pd.Timestamp) -> int:
         d = date.date()
@@ -206,6 +185,10 @@ def run_prediction(
         lambda p: pd.Series(niveau_risque(p, capacite, seuils))
     )
 
+    _hist_df = historique.reset_index()
+    _hist_df.columns = ["date", "passages_jour"]
+    _ref_by_dow = _hist_df.groupby(_hist_df["date"].dt.dayofweek)["passages_jour"].median()
+
     return {
         "site": {
             "id":      site_id,
@@ -219,17 +202,19 @@ def run_prediction(
         },
         "predictions": [
             {
-                "date":              row["date"].strftime("%Y-%m-%d"),
-                "passages_prevus":   int(row["passages_prevus"]),
-                "risque":            row["risque"],
-                "charge":            round(float(row["charge"]), 3),
-                "temperature_moy":   round(float(row["temperature_moy"]), 1),
-                "precipitations_mm": round(float(row["precipitations_mm"]), 1),
-                "pluie_heures":      round(float(row["pluie_heures"]), 1),
-                "neige":             bool(row["neige_oui_non_jour"]),
-                "weekend":           bool(row["weekend"]),
-                "jour_ferie":        bool(row["jour_ferie"]),
-                "vacances":          bool(row["vacances_scolaires_zone_a"]),
+                "date":               row["date"].strftime("%Y-%m-%d"),
+                "passages_prevus":    int(row["passages_prevus"]),
+                "pic_horaire_estime": int(round(row["passages_prevus"] * 0.22)),
+                "passages_reference": int(round(_ref_by_dow.get(row["date"].dayofweek, 0))),
+                "risque":             row["risque"],
+                "charge":             round(float(row["charge"]), 3),
+                "temperature_moy":    round(float(row["temperature_moy"]), 1),
+                "precipitations_mm":  round(float(row["precipitations_mm"]), 1),
+                "pluie_heures":       round(float(row["pluie_heures"]), 1),
+                "neige":              bool(row["neige_oui_non_jour"]),
+                "weekend":            bool(row["weekend"]),
+                "jour_ferie":         bool(row["jour_ferie"]),
+                "vacances":           bool(row["vacances_scolaires_zone_a"]),
             }
             for _, row in df.iterrows()
         ],
@@ -249,7 +234,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> None:
-    import json
+    import json as _json
     args = parse_args()
     logging.basicConfig(
         level=logging.DEBUG if args.verbose else logging.INFO,
@@ -259,7 +244,7 @@ def main() -> None:
     mlflow_uri  = args.mlflow_uri or MLFLOW_CFG["uri"]
     max_results = args.max_results or MLFLOW_CFG["max_results"]
     result = run_prediction(args.site, SITES[args.site], mlflow_uri, max_results)
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    print(_json.dumps(result, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":

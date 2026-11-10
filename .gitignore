@@ -3,6 +3,10 @@ __pycache__/
 mlflow.db
 mlartifacts/
 
+# Données brutes (trop lourdes pour git — garder uniquement les journaliers)
+src/data/*/frequentation_*.csv
+src/data/*/meteo_*.csv
+
 # API
 src/outputs/
 src/.env
