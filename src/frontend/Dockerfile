@@ -1,4 +1,4 @@
-FROM node:24.0-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN --mount=type=cache,target=/root/.npm \
@@ -6,7 +6,7 @@ RUN --mount=type=cache,target=/root/.npm \
 COPY . .
 RUN npm run build
 
-FROM node:24.0-alpine AS runner
+FROM node:24-alpine AS runner
 WORKDIR /app
 COPY --from=builder /app/.output ./.output
 EXPOSE 3000
