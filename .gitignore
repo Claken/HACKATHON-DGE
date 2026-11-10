@@ -2,3 +2,6 @@ __pycache__/
 *.py[cod]
 mlflow.db
 mlartifacts/
+
+src/outputs/
+.env

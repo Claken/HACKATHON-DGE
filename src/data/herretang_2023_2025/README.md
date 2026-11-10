@@ -27,7 +27,7 @@ L'indicateur vacances est un attribut de la journée : date locale de début inc
 
 Source : https://archive-api.open-meteo.com/v1/archive
 
-Requête : latitude 45.38224, longitude 5.68871, du 2023-01-01 au 2025-12-31, variables horaires `precipitation,snowfall`, timezone UTC, timeformat unixtime, modèle par défaut best_match. Les coordonnées de grille retournées sont 45.377853, 5.633803. Ce sont des estimations de réanalyse pour la zone, pas une station installée au compteur. Réponse originale conservée dans `sources/meteo_horaire_openmeteo.json`.
+Requête : latitude 45.38224, longitude 5.68871, du 2023-01-01 au 2025-12-31, variables horaires `precipitation,snowfall`, timezone UTC, timeformat unixtime, modèle par défaut best_match. Les coordonnées de grille retournées sont 45.377853, 5.633803. Ce sont des estimations de réanalyse pour la zone, pas une station installée au compteur. Les coordonnées de grille retournées sont 45.377853, 5.633803.
 
 - `precipitations_mm` : cumul de précipitations sur le créneau, incluant pluie et équivalent en eau de la neige.
 - `precipitation_oui_non` : 1 si ce cumul est strictement supérieur à 0 mm, sinon 0. Ce seuil capte aussi les petites précipitations ; il ne constitue pas un seuil de gêne validé.
@@ -40,8 +40,6 @@ La documentation Open-Meteo étiquette ces cumuls à la fin de l'heure précéde
 
 Joindre les deux fichiers avec `debut_utc`. Cette clé est unique et identique dans les deux fichiers. Ne pas joindre uniquement sur date et heure locales : lors du passage à l'heure d'hiver, 2 h apparaît deux fois avec des décalages UTC différents. Les dates et heures lisibles sont exprimées dans Europe/Paris ; les instants UTC servent à garantir l'alignement.
 
-Les contrôles exécutés vérifient les créneaux horaires, l'absence de doublons UTC, la couverture des 1 096 jours, l'égalité des clés des deux fichiers, la conservation du total des passages valides (37 626), la couverture intégrale des variables météo et la pagination complète du calendrier scolaire. Voir `verification.json`.
+Les contrôles exécutés vérifient les créneaux horaires, l'absence de doublons UTC, la couverture des 1 096 jours, l'égalité des clés des deux fichiers, la conservation du total des passages valides (37 626), la couverture intégrale des variables météo et la pagination complète du calendrier scolaire.
 
-Reproduction : `python3 preparer_donnees.py`, depuis n'importe quel répertoire, en conservant les sources et les archives SSP Cloud à leurs emplacements actuels.
-
-Ces fichiers préparent l'entraînement, qui n'a pas été lancé. Pour évaluer une prévision réelle, utiliser seulement les informations disponibles au moment où elle est émise : la météo future provient de prévisions, pas d'observations connues à l'avance.
+Pour évaluer une prévision réelle, utiliser seulement les informations disponibles au moment où elle est émise : la météo future provient de prévisions, pas d'observations connues à l'avance.
