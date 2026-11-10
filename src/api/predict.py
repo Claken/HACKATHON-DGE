@@ -155,12 +155,22 @@ def niveau_risque(passages: int, capacite: int, seuils: dict) -> tuple[str, floa
     return "FAIBLE", ratio
 
 
-def run_prediction(site_id: str, site_cfg: dict, mlflow_uri: str, max_results: int) -> dict:
+def run_prediction(
+    site_id: str,
+    site_cfg: dict,
+    mlflow_uri: str = None,
+    max_results: int = None,
+    *,
+    model=None,
+    capacite: int = None,
+) -> dict:
     """
     Orchestre la prédiction J+7 et retourne un dict JSON-sérialisable.
-    Appelable depuis la CLI (main) ou depuis l'API FastAPI (main.py).
+    - API  : passe model + capacite (déjà chargés au boot) → pas d'appel MLflow.
+    - CLI  : passe mlflow_uri + max_results → charge le modèle à la volée.
     """
-    model, capacite = charger_meilleur_modele(site_cfg, mlflow_uri, max_results)
+    if model is None:
+        model, capacite = charger_meilleur_modele(site_cfg, mlflow_uri, max_results)
 
     freq       = charger_frequentation(site_cfg)
     historique = freq.groupby("date")["passages_entrants"].sum().sort_index()
